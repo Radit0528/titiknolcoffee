@@ -1,0 +1,42 @@
+@layer components {
+    /* Purchase form rows: bahan | jumlah | harga beli | harga/satuan | hapus.
+       Phone: ingredient on its own line, the rest two per row. */
+    .purchase-row {
+        @apply grid grid-cols-2 items-start gap-3 border-b border-line px-5 py-4 last:border-b-0;
+        @apply sm:grid-cols-[minmax(0,2fr)_9.5rem_10.5rem_7.5rem_2rem] sm:items-center;
+    }
+    .purchase-row > :first-child {
+        @apply col-span-2 sm:col-span-1;
+    }
+    .purchase-row-head {
+        @apply hidden gap-3 border-b border-line bg-coffee-50/60 px-5 py-2.5 text-xs font-semibold tracking-wide text-muted uppercase;
+        @apply sm:grid sm:grid-cols-[minmax(0,2fr)_9.5rem_10.5rem_7.5rem_2rem];
+    }
+    .purchase-total {
+        @apply flex items-center justify-between gap-4 border-t border-line bg-coffee-50/60 px-5 py-4;
+    }
+
+    /* Before → after preview on stock out / adjustment */
+    .stock-preview {
+        @apply grid grid-cols-3 divide-x divide-line rounded-xl border border-line bg-coffee-50/50 text-center;
+    }
+    .stock-preview > div {
+        @apply flex flex-col gap-1 px-3 py-4;
+    }
+    .stock-preview dt {
+        @apply text-[0.7rem] font-semibold tracking-wide text-muted uppercase;
+    }
+    .stock-preview dd {
+        @apply text-lg font-bold tabular-nums;
+    }
+
+    .filter-bar {
+        @apply mb-4 grid gap-2 sm:grid-cols-2 lg:flex lg:flex-wrap lg:items-end;
+    }
+    .filter-bar .field {
+        @apply lg:w-44;
+    }
+    .filter-bar .label {
+        @apply text-xs text-muted;
+    }
+}

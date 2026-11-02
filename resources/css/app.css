@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+/* Self-hosted font: works without internet at the counter. */
+@import '@fontsource-variable/plus-jakarta-sans';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views';
+@source '../js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+
+    /* Brand palette (SIMKOTOL) */
+    --color-coffee-950: #1f100a;
+    --color-coffee-900: #2e1810;
+    --color-coffee-800: #3e2519;
+    --color-coffee-700: #5c4033;
+    --color-coffee-500: #8a6d5c;
+    --color-coffee-300: #c9b5a6;
+    --color-coffee-100: #efe7e0;
+    --color-coffee-50: #f7f2ee;
+
+    --color-accent: #d97706;
+    --color-accent-soft: #fdf3e4;
+
+    --color-canvas: #fdfcfa;
+    --color-surface: #ffffff;
+    --color-line: #ebe5df;
+    --color-ink: #22160f;
+    --color-muted: #7a6a5f;
+
+    --color-success: #16a34a;
+    --color-success-soft: #ecf8f0;
+    --color-warning: #b45309;
+    --color-warning-soft: #fdf4e6;
+    --color-danger: #dc2626;
+    --color-danger-soft: #fdeeee;
+}
+
+@import './components.css';
+@import './layouts/sidebar.css';
+@import './layouts/topbar.css';
+@import './auth/login.css';
+@import './owner/recipes.css';
+@import './owner/inventory.css';
+@import './cashier/pos.css';
+@import './cashier/receipt.css';
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-canvas font-sans text-ink antialiased;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}

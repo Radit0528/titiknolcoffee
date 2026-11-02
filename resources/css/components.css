@@ -1,0 +1,275 @@
+/* Reusable UI primitives. Blade views compose these with Tailwind utilities. */
+
+@layer components {
+    /* Buttons ---------------------------------------------------------- */
+    .btn {
+        @apply inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold whitespace-nowrap transition-colors;
+        @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
+        @apply disabled:cursor-not-allowed disabled:opacity-50;
+    }
+    .btn svg {
+        @apply size-4 shrink-0;
+    }
+    .btn-primary {
+        @apply bg-coffee-900 text-white hover:bg-coffee-800;
+    }
+    .btn-accent {
+        @apply bg-accent text-white hover:bg-[#c26a05];
+    }
+    .btn-secondary {
+        @apply border border-line bg-surface text-ink hover:border-coffee-300 hover:bg-coffee-50;
+    }
+    .btn-ghost {
+        @apply text-muted hover:bg-coffee-50 hover:text-ink;
+    }
+    .btn-danger {
+        @apply bg-danger text-white hover:bg-[#b91c1c];
+    }
+    .btn-sm {
+        @apply h-8 px-3 text-xs;
+    }
+    .btn-icon {
+        @apply size-8 px-0;
+    }
+
+    /* Surfaces --------------------------------------------------------- */
+    .card {
+        @apply rounded-xl border border-line bg-surface;
+    }
+    .card-header {
+        @apply flex items-center justify-between gap-3 border-b border-line px-5 py-4;
+    }
+    .card-title {
+        @apply text-sm font-semibold text-ink;
+    }
+    .card-body {
+        @apply p-5;
+    }
+
+    /* Page header ------------------------------------------------------ */
+    .page-header {
+        @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+    }
+    .page-title {
+        @apply text-xl font-bold tracking-tight text-ink sm:text-2xl;
+    }
+    .page-subtitle {
+        @apply mt-1 text-sm text-muted;
+    }
+    .back-link {
+        @apply mb-2 inline-flex items-center gap-1 text-xs font-medium text-muted hover:text-ink;
+    }
+    .back-link svg {
+        @apply size-3.5;
+    }
+
+    /* Forms ------------------------------------------------------------ */
+    .field {
+        @apply flex flex-col gap-1.5;
+    }
+    .label {
+        @apply text-sm font-medium text-ink;
+    }
+    .hint {
+        @apply text-xs text-muted;
+    }
+    .field-error {
+        @apply text-xs font-medium text-danger;
+    }
+    .input,
+    .select,
+    .textarea {
+        @apply w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink placeholder:text-coffee-300;
+        @apply focus:border-coffee-700 focus:ring-3 focus:ring-coffee-100 focus:outline-none;
+        @apply disabled:bg-coffee-50 disabled:text-muted;
+    }
+    .input,
+    .select {
+        @apply h-10;
+    }
+    .textarea {
+        @apply min-h-24 py-2.5;
+    }
+    .input-invalid {
+        @apply border-danger focus:border-danger focus:ring-danger-soft;
+    }
+    .input-group {
+        @apply flex items-stretch;
+    }
+    .input-addon {
+        @apply inline-flex shrink-0 items-center border border-line bg-coffee-50 px-3 text-sm text-muted;
+    }
+    .input-group > .input {
+        @apply min-w-0 flex-1;
+    }
+    .input-group > .input-addon:first-child {
+        @apply rounded-l-lg border-r-0;
+    }
+    .input-group > .input-addon:last-child {
+        @apply rounded-r-lg border-l-0;
+    }
+    .input-group > .input:not(:first-child) {
+        @apply rounded-l-none;
+    }
+    .input-group > .input:not(:last-child) {
+        @apply rounded-r-none;
+    }
+    .search-field {
+        @apply relative;
+    }
+    .search-field svg {
+        @apply pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted;
+    }
+    .search-field .input {
+        @apply pl-9;
+    }
+
+    /* Toggle switch (checkbox) */
+    .switch {
+        @apply relative inline-flex cursor-pointer items-center gap-3;
+    }
+    .switch input {
+        @apply sr-only;
+    }
+    .switch-track {
+        @apply relative h-6 w-11 shrink-0 rounded-full bg-coffee-100 transition-colors peer-checked:bg-success peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent;
+    }
+    .switch-track::after {
+        @apply absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow-sm transition-transform content-[''];
+    }
+    .switch input:checked + .switch-track::after {
+        @apply translate-x-5;
+    }
+
+    /* Tables ----------------------------------------------------------- */
+    .table-wrap {
+        @apply overflow-x-auto;
+    }
+    .table {
+        @apply w-full text-left text-sm;
+    }
+    .table th {
+        @apply border-b border-line bg-coffee-50/60 px-4 py-3 text-xs font-semibold tracking-wide text-muted uppercase;
+    }
+    .table td {
+        @apply border-b border-line px-4 py-3 align-middle;
+    }
+    .table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+    .table tbody tr {
+        @apply transition-colors hover:bg-coffee-50/40;
+    }
+    .num {
+        @apply text-right tabular-nums;
+    }
+
+    /* Badges ----------------------------------------------------------- */
+    .badge {
+        @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap;
+    }
+    .badge::before {
+        @apply size-1.5 rounded-full bg-current content-[''];
+    }
+    .badge-success {
+        @apply bg-success-soft text-success;
+    }
+    .badge-warning {
+        @apply bg-warning-soft text-warning;
+    }
+    .badge-danger {
+        @apply bg-danger-soft text-danger;
+    }
+    .badge-neutral {
+        @apply bg-coffee-50 text-muted;
+    }
+
+    /* Stat card -------------------------------------------------------- */
+    .stat-card {
+        @apply flex flex-col gap-3 rounded-xl border border-line bg-surface p-5;
+    }
+    .stat-label {
+        @apply flex items-center gap-2 text-xs font-semibold tracking-wide text-muted uppercase;
+    }
+    .stat-label svg {
+        @apply size-4 text-coffee-500;
+    }
+    .stat-value {
+        @apply text-2xl font-bold tracking-tight text-ink tabular-nums;
+    }
+    .stat-note {
+        @apply text-xs text-muted;
+    }
+
+    /* Empty state ------------------------------------------------------ */
+    .empty-state {
+        @apply flex flex-col items-center gap-2 px-6 py-14 text-center;
+    }
+    .empty-state-icon {
+        @apply mb-1 grid size-12 place-items-center rounded-full bg-coffee-50 text-coffee-500;
+    }
+    .empty-state-icon svg {
+        @apply size-5;
+    }
+
+    /* Thumbnails ------------------------------------------------------- */
+    .thumb {
+        @apply grid size-11 shrink-0 place-items-center overflow-hidden rounded-lg bg-coffee-50 text-coffee-300;
+    }
+    .thumb img {
+        @apply size-full object-cover;
+    }
+    .thumb svg {
+        @apply size-5;
+    }
+
+    /* Toast ------------------------------------------------------------ */
+    .toast-stack {
+        @apply pointer-events-none fixed inset-x-4 top-4 z-50 flex flex-col items-end gap-2 sm:left-auto sm:w-96;
+    }
+    .toast {
+        @apply pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-line bg-surface p-4 text-sm shadow-lg shadow-coffee-900/5;
+    }
+    .toast svg {
+        @apply mt-0.5 size-4 shrink-0;
+    }
+    .toast-success svg {
+        @apply text-success;
+    }
+    .toast-error svg {
+        @apply text-danger;
+    }
+
+    /* Modal ------------------------------------------------------------ */
+    .modal-backdrop {
+        @apply fixed inset-0 z-40 bg-coffee-950/40;
+    }
+    .modal-panel {
+        @apply fixed inset-x-4 top-1/2 z-50 mx-auto max-w-md -translate-y-1/2 rounded-2xl bg-surface p-6 shadow-xl;
+    }
+    .modal-icon {
+        @apply mb-4 grid size-10 place-items-center rounded-full bg-danger-soft text-danger;
+    }
+    .modal-icon svg {
+        @apply size-5;
+    }
+
+    /* Alert ------------------------------------------------------------ */
+    .alert {
+        @apply flex items-start gap-3 rounded-xl border px-4 py-3 text-sm;
+    }
+    .alert svg {
+        @apply mt-0.5 size-4 shrink-0;
+    }
+    .alert-warning {
+        @apply border-warning/20 bg-warning-soft text-warning;
+    }
+    .alert-info {
+        @apply border-line bg-coffee-50 text-coffee-700;
+    }
+
+    /* Pagination (Laravel tailwind view) sits inside cards */
+    .pagination-wrap {
+        @apply border-t border-line px-4 py-3;
+    }
+}

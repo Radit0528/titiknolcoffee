@@ -1,0 +1,24 @@
+@layer components {
+    .login-shell {
+        @apply grid min-h-dvh lg:grid-cols-[1.05fr_1fr];
+    }
+    .login-aside {
+        @apply relative hidden flex-col justify-between overflow-hidden bg-coffee-900 p-12 text-coffee-100 lg:flex;
+    }
+    /* Concentric rings echo the "titik nol" (point zero) mark. */
+    .login-aside::after {
+        @apply pointer-events-none absolute -right-40 -bottom-40 size-[34rem] rounded-full border border-white/[0.06] content-[''];
+        box-shadow:
+            0 0 0 4rem rgb(255 255 255 / 0.025),
+            0 0 0 8rem rgb(255 255 255 / 0.02);
+    }
+    .login-quote {
+        @apply max-w-md text-3xl leading-tight font-bold tracking-tight text-white;
+    }
+    .login-panel {
+        @apply flex items-center justify-center px-5 py-12 sm:px-10;
+    }
+    .login-card {
+        @apply w-full max-w-sm;
+    }
+}

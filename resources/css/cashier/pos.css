@@ -1,0 +1,142 @@
+@layer components {
+    /* Catalogue left, cart right on desktop; cart becomes a sheet on phones. */
+    .pos-shell {
+        @apply grid gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] xl:grid-cols-[minmax(0,1fr)_25rem];
+    }
+    .pos-catalog {
+        @apply min-w-0 pb-20 lg:pb-0;
+    }
+    .category-tabs {
+        @apply -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0;
+    }
+    .category-tab {
+        @apply h-9 shrink-0 rounded-full border border-line bg-surface px-4 text-sm font-medium text-muted transition-colors hover:text-ink;
+    }
+    .category-tab[aria-pressed='true'] {
+        @apply border-coffee-900 bg-coffee-900 text-white;
+    }
+    .product-grid {
+        @apply grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4;
+    }
+    .product-tile {
+        @apply relative flex flex-col overflow-hidden rounded-xl border border-line bg-surface text-left transition;
+        @apply hover:border-coffee-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-[0.98];
+        @apply disabled:cursor-not-allowed disabled:active:scale-100;
+    }
+    .product-tile-media {
+        @apply grid aspect-[4/3] place-items-center bg-coffee-50 text-coffee-300;
+    }
+    .product-tile-media img {
+        @apply size-full object-cover;
+    }
+    .product-tile-media svg {
+        @apply size-8;
+    }
+    .product-tile:disabled .product-tile-media {
+        @apply opacity-40 grayscale;
+    }
+    .product-qty {
+        @apply absolute top-2 right-2 grid size-7 place-items-center rounded-full bg-accent text-xs font-bold text-white tabular-nums shadow-sm;
+    }
+
+    /* Hidden below the screen on phones until opened. Alpine drops a
+       data attribute bound to false, so only the open state is matched. */
+    .pos-cart {
+        @apply fixed inset-x-0 bottom-0 z-40 flex max-h-[88dvh] translate-y-full flex-col rounded-t-2xl border border-line bg-surface shadow-2xl transition-transform duration-200;
+        @apply lg:sticky lg:top-24 lg:z-auto lg:max-h-[calc(100dvh-8rem)] lg:translate-y-0 lg:rounded-xl lg:shadow-none;
+    }
+    .pos-cart[data-open='true'] {
+        @apply translate-y-0;
+    }
+    .cart-lines {
+        @apply flex-1 divide-y divide-line overflow-y-auto;
+    }
+    .cart-line {
+        @apply flex flex-col gap-2 px-5 py-3;
+    }
+    .qty-stepper {
+        @apply inline-flex items-center rounded-lg border border-line;
+    }
+    .qty-stepper button {
+        @apply grid size-8 place-items-center text-muted hover:text-ink;
+    }
+    .qty-stepper button svg {
+        @apply size-3.5;
+    }
+    .qty-stepper span {
+        @apply w-8 text-center text-sm font-semibold tabular-nums;
+    }
+    .segmented {
+        @apply grid grid-cols-2 rounded-lg bg-coffee-50 p-1;
+    }
+    .segmented button {
+        @apply h-8 rounded-md text-sm font-medium text-muted;
+    }
+    .segmented button[aria-pressed='true'] {
+        @apply bg-surface text-ink shadow-sm;
+    }
+    .totals {
+        @apply flex flex-col gap-1.5 text-sm;
+    }
+    .totals > div {
+        @apply flex justify-between tabular-nums;
+    }
+    .totals dt {
+        @apply text-muted;
+    }
+    .cart-bar {
+        @apply fixed inset-x-4 bottom-[4.5rem] z-30 flex h-14 items-center justify-between rounded-xl bg-coffee-900 px-5 font-semibold text-white shadow-lg lg:hidden;
+    }
+
+    /* Payment dialog */
+    .pay-total {
+        @apply rounded-xl bg-coffee-900 px-5 py-4 text-white;
+    }
+    .cash-options {
+        @apply grid grid-cols-2 gap-2;
+    }
+    .cash-option {
+        @apply h-11 rounded-lg border border-line bg-surface text-sm font-semibold tabular-nums hover:border-coffee-700;
+    }
+    .cash-option[aria-pressed='true'] {
+        @apply border-coffee-900 bg-coffee-50;
+    }
+    .cash-input {
+        @apply h-14 text-right text-2xl font-bold tabular-nums;
+    }
+    .pay-panel {
+        @apply fixed inset-x-4 top-1/2 z-50 mx-auto max-h-[92dvh] max-w-md -translate-y-1/2 overflow-y-auto rounded-2xl bg-surface p-6 shadow-xl;
+    }
+
+    /* Cashier top navigation */
+    .cashier-nav {
+        @apply hidden items-center gap-1 md:flex;
+    }
+    .cashier-nav a {
+        @apply inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium text-muted hover:bg-coffee-50 hover:text-ink;
+    }
+    .cashier-nav a svg {
+        @apply size-4;
+    }
+    .cashier-nav a[aria-current='page'] {
+        @apply bg-coffee-50 text-ink;
+    }
+    .cashier-nav-mobile {
+        @apply fixed inset-x-0 bottom-0 z-20 grid grid-cols-3 border-t border-line bg-surface md:hidden;
+    }
+    .cashier-nav-mobile a {
+        @apply flex h-14 flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium text-muted;
+    }
+    .cashier-nav-mobile a svg {
+        @apply size-5;
+    }
+    .cashier-nav-mobile a[aria-current='page'] {
+        @apply text-coffee-900;
+    }
+    .shift-chip {
+        @apply hidden items-center gap-1.5 rounded-full bg-success-soft px-3 py-1 text-xs font-semibold text-success sm:inline-flex;
+    }
+    .shift-chip::before {
+        @apply size-1.5 rounded-full bg-current content-[''];
+    }
+}

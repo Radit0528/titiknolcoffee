@@ -1,0 +1,38 @@
+@layer components {
+    .sidebar {
+        @apply fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-coffee-900 text-coffee-100 transition-transform duration-200 lg:translate-x-0;
+    }
+    .sidebar[data-open='true'] {
+        @apply translate-x-0;
+    }
+    .sidebar-brand {
+        @apply flex h-16 items-center gap-3 border-b border-white/10 px-5;
+    }
+    .sidebar-nav {
+        @apply flex-1 overflow-y-auto px-3 py-5;
+    }
+    .sidebar-section {
+        @apply mt-6 mb-2 px-3 text-[0.68rem] font-semibold tracking-[0.14em] text-coffee-500 uppercase first:mt-0;
+    }
+    .sidebar-link {
+        @apply relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-coffee-300 transition-colors hover:bg-white/5 hover:text-white;
+    }
+    .sidebar-link svg {
+        @apply size-[1.1rem] shrink-0;
+    }
+    .sidebar-link-active {
+        @apply bg-white/[0.07] text-white;
+    }
+    .sidebar-link-active::before {
+        @apply absolute top-2 bottom-2 -left-3 w-1 rounded-r-full bg-accent content-[''];
+    }
+    .sidebar-badge {
+        @apply ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1.5 text-[0.68rem] font-bold text-white tabular-nums;
+    }
+    .sidebar-footer {
+        @apply border-t border-white/10 p-4;
+    }
+    .sidebar-overlay {
+        @apply fixed inset-0 z-30 bg-coffee-950/50 lg:hidden;
+    }
+}

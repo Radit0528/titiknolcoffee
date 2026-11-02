@@ -1,0 +1,37 @@
+/* Entry for the standalone receipt print page (no app chrome). */
+@import './cashier/receipt.css';
+
+html,
+body {
+    margin: 0;
+    background: #fff;
+}
+
+.print-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    font-family: system-ui, sans-serif;
+}
+.print-actions a,
+.print-actions button {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #fff;
+    font-size: 14px;
+    color: #222;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+@media print {
+    .print-actions {
+        display: none;
+    }
+}
+
+@page {
+    margin: 0;
+}

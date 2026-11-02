@@ -1,0 +1,26 @@
+@layer components {
+    .recipe-row {
+        @apply grid grid-cols-[1fr_auto] items-start gap-3 border-b border-line px-5 py-4 last:border-b-0 sm:grid-cols-[minmax(0,2fr)_9rem_8rem_auto] sm:items-center;
+    }
+    .recipe-row-head {
+        @apply hidden border-b border-line bg-coffee-50/60 px-5 py-2.5 text-xs font-semibold tracking-wide text-muted uppercase sm:grid sm:grid-cols-[minmax(0,2fr)_9rem_8rem_auto] sm:gap-3;
+    }
+    .costing-list {
+        @apply divide-y divide-line text-sm;
+    }
+    .costing-list > div {
+        @apply flex items-center justify-between py-2.5;
+    }
+    .costing-list dt {
+        @apply text-muted;
+    }
+    .costing-list dd {
+        @apply font-semibold tabular-nums;
+    }
+    .margin-bar {
+        @apply mt-1 h-1.5 overflow-hidden rounded-full bg-coffee-100;
+    }
+    .margin-bar > span {
+        @apply block h-full rounded-full bg-success transition-[width];
+    }
+}

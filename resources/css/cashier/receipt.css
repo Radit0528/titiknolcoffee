@@ -1,0 +1,79 @@
+/*
+ * Thermal receipt. Shared by the on-screen receipt and the print page.
+ * Widths: 58 mm paper ≈ 48 mm printable, 80 mm paper ≈ 72 mm printable.
+ */
+.receipt {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #000;
+    background: #fff;
+    margin: 0 auto;
+    padding: 4mm 0;
+}
+.receipt-58 {
+    width: 48mm;
+}
+.receipt-80 {
+    width: 72mm;
+    font-size: 13px;
+}
+.receipt-center {
+    text-align: center;
+}
+.receipt-logo {
+    display: block;
+    max-width: 60%;
+    max-height: 18mm;
+    margin: 0 auto 2mm;
+    object-fit: contain;
+    filter: grayscale(1);
+}
+.receipt-store {
+    font-size: 1.15em;
+    font-weight: 700;
+}
+.receipt-rule {
+    border: 0;
+    border-top: 1px dashed #000;
+    margin: 2mm 0;
+}
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 2mm;
+}
+.receipt-row > :last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+.receipt-item-name {
+    font-weight: 600;
+}
+.receipt-note {
+    padding-left: 2mm;
+    font-style: italic;
+}
+.receipt-total {
+    font-size: 1.15em;
+    font-weight: 700;
+}
+.receipt-muted {
+    color: #333;
+}
+
+/* On-screen preview: paper look inside the app. */
+.receipt-paper {
+    /* Padding goes outside the paper width (the app uses border-box). */
+    box-sizing: content-box;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgb(46 24 16 / 0.08), 0 8px 24px rgb(46 24 16 / 0.06);
+    padding: 6mm 5mm;
+}
+
+@media print {
+    .receipt-paper {
+        box-shadow: none;
+        padding: 0;
+    }
+}

@@ -1,0 +1,17 @@
+@layer components {
+    .topbar {
+        @apply sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-line bg-canvas/90 px-4 backdrop-blur sm:px-6 lg:px-8;
+    }
+    .topbar-user {
+        @apply ml-auto flex items-center gap-3;
+    }
+    .avatar {
+        @apply grid size-9 place-items-center rounded-full bg-coffee-100 text-sm font-bold text-coffee-900;
+    }
+    .role-chip {
+        @apply rounded-md bg-accent-soft px-2 py-0.5 text-[0.68rem] font-semibold tracking-wide text-accent uppercase;
+    }
+    .main-content {
+        @apply mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8;
+    }
+}
