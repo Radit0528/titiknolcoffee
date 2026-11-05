@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Carbon;
+
 class Format
 {
     /**
@@ -44,5 +46,25 @@ class Format
         $formatted = number_format((float) ($value ?? 0), 2, ',', '.');
 
         return rtrim(rtrim($formatted, '0'), ',').'%';
+    }
+
+    /**
+     * Format one report cell by its column type (see ReportService).
+     */
+    public static function cell(mixed $value, string $type): string
+    {
+        if ($value === null || $value === '') {
+            return '–';
+        }
+
+        return match ($type) {
+            'money' => self::rupiah($value),
+            'int' => number_format((float) $value, 0, ',', '.'),
+            'qty' => self::qty($value),
+            'percent' => number_format((float) $value, 1, ',', '.').'%',
+            'date' => Carbon::parse($value)->translatedFormat('D, d M Y'),
+            'datetime' => Carbon::parse($value)->format('d/m/Y H:i'),
+            default => (string) $value,
+        };
     }
 }

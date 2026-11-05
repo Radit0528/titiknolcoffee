@@ -40,7 +40,7 @@
                 <x-form.field label="Maksimum diskon" for="max_discount" hint="Opsional, untuk diskon persen.">
                     <div class="input-group">
                         <span class="input-addon">Rp</span>
-                        <input id="max_discount" name="max_discount" type="number" min="0" step="500" value="{{ old('max_discount', $voucher->max_discount !== null ? (int) $voucher->max_discount : '') }}"
+                        <input id="max_discount" name="max_discount" type="number" min="0" step="1" value="{{ old('max_discount', $voucher->max_discount !== null ? (int) $voucher->max_discount : '') }}"
                                @class(['input', 'input-invalid' => $errors->has('max_discount')])>
                     </div>
                 </x-form.field>
@@ -50,7 +50,7 @@
                 <x-form.field label="Minimum pembelian" for="min_purchase">
                     <div class="input-group">
                         <span class="input-addon">Rp</span>
-                        <input id="min_purchase" name="min_purchase" type="number" min="0" step="500" value="{{ old('min_purchase', $voucher->min_purchase !== null ? (int) $voucher->min_purchase : '') }}"
+                        <input id="min_purchase" name="min_purchase" type="number" min="0" step="1" value="{{ old('min_purchase', $voucher->min_purchase !== null ? (int) $voucher->min_purchase : '') }}"
                                @class(['input', 'input-invalid' => $errors->has('min_purchase')])>
                     </div>
                 </x-form.field>

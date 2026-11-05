@@ -25,7 +25,6 @@ class MasterDataSeeder extends Seeder
 
         $kopi = Category::create(['name' => 'Kopi', 'sort_order' => 1]);
         $nonKopi = Category::create(['name' => 'Non-Kopi', 'sort_order' => 2]);
-        $makanan = Category::create(['name' => 'Makanan', 'sort_order' => 3]);
 
         $roastery = Supplier::create(['name' => 'Sangrai Banyumas Roastery', 'phone' => '081234567890', 'address' => 'Purwokerto']);
         $dairy = Supplier::create(['name' => 'Susu Segar Baturraden', 'phone' => '082233445566', 'address' => 'Baturraden, Banyumas']);
@@ -40,7 +39,6 @@ class MasterDataSeeder extends Seeder
             'matcha' => ['Bubuk Matcha', IngredientUnit::Gram, $grosir, 400, 200, 600],
             'choco' => ['Bubuk Cokelat', IngredientUnit::Gram, $grosir, 150, 200, 150],
             'cup' => ['Cup Plastik 16oz', IngredientUnit::Pcs, $grosir, 300, 100, 900],
-            'croissant' => ['Croissant Beku', IngredientUnit::Pcs, $grosir, 0, 10, 7000],
         ];
 
         $i = [];
@@ -60,7 +58,6 @@ class MasterDataSeeder extends Seeder
             [$kopi, 'Cafe Latte', 25000, ['beans' => 18, 'milk' => 180, 'cup' => 1]],
             [$nonKopi, 'Matcha Latte', 26000, ['matcha' => 5, 'milk' => 180, 'ice' => 100, 'cup' => 1]],
             [$nonKopi, 'Cokelat Dingin', 22000, ['choco' => 25, 'milk' => 180, 'ice' => 100, 'cup' => 1]],
-            [$makanan, 'Croissant Butter', 20000, ['croissant' => 1]],
         ];
 
         foreach ($menu as [$category, $name, $price, $recipe]) {

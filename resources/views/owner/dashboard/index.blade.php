@@ -2,42 +2,74 @@
 
 @section('title', 'Dashboard')
 
-@section('content')
-    <x-ui.page-header title="Dashboard" :subtitle="'Ringkasan kedai · '.now()->translatedFormat('l, d F Y')" />
+@use('App\Support\Format')
 
-    <div class="alert alert-info mb-6">
-        <x-ui.icon name="clipboard-list" />
-        <p>Angka penjualan (omzet, transaksi, laba kotor, menu terlaris) akan tampil di sini setelah modul kasir dan laporan aktif.</p>
-    </div>
+@section('content')
+    <x-ui.page-header title="Dashboard" :subtitle="'Ringkasan kedai · '.now()->translatedFormat('l, d F Y')">
+        <x-ui.button :href="route('owner.reports.index')" variant="secondary" icon="chart-column">Lihat laporan</x-ui.button>
+    </x-ui.page-header>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <x-ui.stat-card label="Nilai persediaan" icon="wallet" :value="\App\Support\Format::rupiah($inventoryValue)" note="Stok × harga modal per satuan" />
-        <x-ui.stat-card label="Bahan menipis" icon="alert-triangle" :value="$lowStockCount" note="Di bawah atau sama dengan minimum stok" />
-        <x-ui.stat-card label="Produk tersedia" icon="coffee" :value="$availableProductCount.' / '.$productCount" note="Produk yang dapat dijual" />
-        <x-ui.stat-card label="Pembelian bulan ini" icon="shopping-basket" :value="\App\Support\Format::rupiah($purchasesThisMonth)" :note="$activeCategoryCount.' kategori menu aktif'" />
+        <x-ui.stat-card label="Omzet hari ini" icon="wallet" :value="Format::rupiah($todayRevenue)" :note="$todayTransactions.' transaksi'" />
+        <x-ui.stat-card label="Omzet bulan ini" icon="chart-column" :value="Format::rupiah($monthRevenue)" :note="now()->translatedFormat('F Y')" />
+        <x-ui.stat-card label="Laba kotor bulan ini" icon="coffee" :value="Format::rupiah($monthGrossProfit)" :note="'Margin '.number_format($monthMargin, 1, ',', '.').'% · estimasi dari HPP resep'" />
+        <x-ui.stat-card label="Nilai persediaan" icon="boxes" :value="Format::rupiah($inventoryValue)" :note="$lowStockCount.' bahan menipis · pembelian bulan ini '.Format::rupiah($purchasesThisMonth)" />
     </div>
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-5">
-        <section class="card lg:col-span-3">
+    <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <section class="card lg:col-span-2">
             <div class="card-header">
-                <h2 class="card-title">Bahan perlu dibeli</h2>
-                <a href="{{ route('owner.purchases.create') }}" class="text-xs font-semibold text-accent hover:underline">Catat pembelian</a>
+                <h2 class="card-title">Penjualan 14 hari terakhir</h2>
+                <span class="text-xs text-muted">{{ Format::rupiah(array_sum($chart['revenue'])) }} · {{ array_sum($chart['transactions']) }} transaksi</span>
             </div>
-            @if ($lowStockIngredients->isEmpty())
-                <x-ui.empty-state icon="boxes" title="Semua stok aman" description="Tidak ada bahan di bawah minimum stok." />
+            <div class="card-body">
+                <div class="chart-box">
+                    <canvas data-chart="{{ json_encode($chart) }}" aria-label="Grafik omzet harian" role="img"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header"><h2 class="card-title">Menu terlaris bulan ini</h2></div>
+            @if ($bestSellers->isEmpty())
+                <x-ui.empty-state icon="coffee" title="Belum ada penjualan" description="Menu terlaris tampil setelah ada transaksi bulan ini." />
+            @else
+                <ol class="divide-y divide-line">
+                    @foreach ($bestSellers as $i => $item)
+                        <li class="flex items-center gap-3 px-5 py-3 text-sm">
+                            <span class="grid size-7 shrink-0 place-items-center rounded-full bg-coffee-50 text-xs font-bold text-coffee-700">{{ $i + 1 }}</span>
+                            <span class="flex-1 font-medium">{{ $item->name }}</span>
+                            <span class="text-right tabular-nums">
+                                <span class="block font-semibold">{{ (int) $item->qty }} terjual</span>
+                                <span class="text-xs text-muted">{{ Format::rupiah($item->sales) }}</span>
+                            </span>
+                        </li>
+                    @endforeach
+                </ol>
+            @endif
+        </section>
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-3">
+        <section class="card lg:col-span-2">
+            <div class="card-header">
+                <h2 class="card-title">Transaksi terbaru</h2>
+                <a href="{{ route('orders.index') }}" class="text-xs font-semibold text-accent hover:underline">Lihat semua</a>
+            </div>
+            @if ($recentOrders->isEmpty())
+                <x-ui.empty-state icon="receipt-text" title="Belum ada transaksi" />
             @else
                 <div class="table-wrap">
                     <table class="table">
-                        <thead>
-                            <tr><th>Bahan</th><th class="num">Stok</th><th class="num">Minimum</th><th>Status</th></tr>
-                        </thead>
+                        <thead><tr><th>No. transaksi</th><th>Waktu</th><th>Kasir</th><th>Metode</th><th class="num">Total</th></tr></thead>
                         <tbody>
-                            @foreach ($lowStockIngredients as $ingredient)
+                            @foreach ($recentOrders as $order)
                                 <tr>
-                                    <td class="font-medium">{{ $ingredient->name }}</td>
-                                    <td class="num">{{ \App\Support\Format::qty($ingredient->stock) }} {{ $ingredient->unit->label() }}</td>
-                                    <td class="num text-muted">{{ \App\Support\Format::qty($ingredient->min_stock) }}</td>
-                                    <td><x-ui.badge :variant="$ingredient->stockStatus()->badge()">{{ $ingredient->stockStatus()->label() }}</x-ui.badge></td>
+                                    <td class="font-medium"><a href="{{ route('orders.show', $order) }}" class="hover:underline">{{ $order->code }}</a></td>
+                                    <td class="whitespace-nowrap">{{ $order->paid_at->translatedFormat('d M H:i') }}</td>
+                                    <td>{{ $order->user->name }}</td>
+                                    <td>{{ $order->payment?->method->label() ?? '–' }}</td>
+                                    <td class="num font-semibold">{{ Format::rupiah($order->grand_total) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -46,23 +78,35 @@
             @endif
         </section>
 
-        <section class="card lg:col-span-2">
+        <section class="card">
             <div class="card-header">
-                <h2 class="card-title">Produk tanpa resep</h2>
-                <a href="{{ route('owner.recipes.index') }}" class="text-xs font-semibold text-accent hover:underline">Kelola resep</a>
+                <h2 class="card-title">Bahan perlu dibeli</h2>
+                <a href="{{ route('owner.purchases.create') }}" class="text-xs font-semibold text-accent hover:underline">Catat pembelian</a>
             </div>
-            @if ($productsWithoutRecipe->isEmpty())
-                <x-ui.empty-state icon="book-open-text" title="Semua produk punya resep" description="HPP setiap produk sudah dapat dihitung." />
+            @if ($lowStockIngredients->isEmpty())
+                <x-ui.empty-state icon="boxes" title="Semua stok aman" />
             @else
-                <p class="px-5 pt-4 text-xs text-muted">HPP produk ini belum bisa dihitung dan stoknya tidak akan terpotong saat terjual.</p>
                 <ul class="divide-y divide-line">
-                    @foreach ($productsWithoutRecipe as $product)
+                    @foreach ($lowStockIngredients as $ingredient)
                         <li class="flex items-center justify-between gap-3 px-5 py-3 text-sm">
-                            <span class="font-medium">{{ $product->name }}</span>
-                            <x-ui.button :href="route('owner.recipes.edit', $product)" variant="secondary" size="sm">Atur resep</x-ui.button>
+                            <span>
+                                <span class="block font-medium">{{ $ingredient->name }}</span>
+                                <span class="text-xs text-muted">{{ Format::qty($ingredient->stock) }} / min. {{ Format::qty($ingredient->min_stock) }} {{ $ingredient->unit->label() }}</span>
+                            </span>
+                            <x-ui.badge :variant="$ingredient->stockStatus()->badge()">{{ $ingredient->stockStatus()->label() }}</x-ui.badge>
                         </li>
                     @endforeach
                 </ul>
+            @endif
+            @if ($productsWithoutRecipe->isNotEmpty())
+                <div class="border-t border-line px-5 py-3">
+                    <p class="mb-1 text-xs font-semibold text-warning">Produk tanpa resep (HPP belum terhitung)</p>
+                    <p class="text-sm">
+                        @foreach ($productsWithoutRecipe as $product)
+                            <a href="{{ route('owner.recipes.edit', $product) }}" class="hover:underline">{{ $product->name }}</a>@if (! $loop->last), @endif
+                        @endforeach
+                    </p>
+                </div>
             @endif
         </section>
     </div>

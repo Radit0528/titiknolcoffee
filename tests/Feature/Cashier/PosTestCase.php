@@ -61,7 +61,7 @@ abstract class PosTestCase extends TestCase
         return array_merge([
             'client_token' => (string) Str::uuid(),
             'items' => [['product_id' => $this->kopi->id, 'quantity' => $quantity, 'note' => 'less sugar']],
-            'order_type' => 'dine_in',
+            'order_type' => 'take_away',
             'customer_name' => 'Rani',
             'voucher_code' => null,
             'cash_received' => 50000,

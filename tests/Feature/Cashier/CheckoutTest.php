@@ -184,6 +184,13 @@ class CheckoutTest extends PosTestCase
         $this->checkout($this->cart(1, ['client_token' => 'not-a-uuid']))->assertStatus(422)->assertJsonValidationErrors('client_token');
     }
 
+    public function test_dine_in_is_not_offered_at_the_container_outlet(): void
+    {
+        $this->checkout($this->cart(1, ['order_type' => 'dine_in']))->assertStatus(422)->assertJsonValidationErrors('order_type');
+
+        $this->actingAs($this->cashier)->get('/kasir')->assertOk()->assertDontSee('Dine In');
+    }
+
     public function test_pos_page_shows_servings_left(): void
     {
         $this->ing['beans']->forceFill(['stock' => 54])->save(); // 3 cups

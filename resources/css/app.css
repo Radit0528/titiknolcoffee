@@ -43,6 +43,7 @@
 @import './auth/login.css';
 @import './owner/recipes.css';
 @import './owner/inventory.css';
+@import './owner/admin.css';
 @import './cashier/pos.css';
 @import './cashier/receipt.css';
 

@@ -39,6 +39,11 @@ class Shift extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function cashMovements(): HasMany
+    {
+        return $this->hasMany(ShiftCashMovement::class);
+    }
+
     public function scopeOpen(Builder $query): Builder
     {
         return $query->whereNull('closed_at');

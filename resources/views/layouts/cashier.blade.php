@@ -14,13 +14,16 @@
             <x-cashier.nav-link route="cashier.pos" icon="shopping-cart">Kasir</x-cashier.nav-link>
             <x-cashier.nav-link route="cashier.drafts.index" icon="save">Draft @if ($draftCount)<span class="sidebar-badge">{{ $draftCount }}</span>@endif</x-cashier.nav-link>
             <x-cashier.nav-link route="orders.index" active="orders.*" icon="receipt-text">Riwayat</x-cashier.nav-link>
+            @if ($currentShift)
+                <x-cashier.nav-link route="cashier.shift.current" icon="clock">Shift</x-cashier.nav-link>
+            @endif
         </nav>
 
         <div class="ml-auto flex items-center gap-3">
             @if ($currentShift)
-                <span class="shift-chip" title="Modal awal {{ \App\Support\Format::rupiah($currentShift->opening_cash) }}">
+                <a href="{{ route('cashier.shift.current') }}" class="shift-chip" title="Modal awal {{ \App\Support\Format::rupiah($currentShift->opening_cash) }}">
                     Shift sejak {{ $currentShift->opened_at->format('H:i') }}
-                </span>
+                </a>
             @endif
             <x-topbar.user />
             <form method="POST" action="{{ route('logout') }}">
@@ -38,5 +41,6 @@
         <x-cashier.nav-link route="cashier.pos" icon="shopping-cart">Kasir</x-cashier.nav-link>
         <x-cashier.nav-link route="cashier.drafts.index" icon="save">Draft{{ $draftCount ? " ($draftCount)" : '' }}</x-cashier.nav-link>
         <x-cashier.nav-link route="orders.index" active="orders.*" icon="receipt-text">Riwayat</x-cashier.nav-link>
+        <x-cashier.nav-link route="cashier.shift.current" icon="clock">Shift</x-cashier.nav-link>
     </nav>
 @endsection

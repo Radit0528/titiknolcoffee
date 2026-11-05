@@ -42,7 +42,7 @@ class IngredientManagementTest extends TestCase
     public function test_zero_opening_stock_creates_no_mutation(): void
     {
         $this->actingAs($this->owner())->post('/owner/ingredients', [
-            'name' => 'Croissant', 'unit' => 'pcs', 'min_stock' => 10, 'cost_per_unit' => 7000, 'initial_stock' => 0,
+            'name' => 'Sedotan', 'unit' => 'pcs', 'min_stock' => 10, 'cost_per_unit' => 150, 'initial_stock' => 0,
         ]);
 
         $this->assertDatabaseCount('stock_mutations', 0);

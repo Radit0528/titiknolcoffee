@@ -15,7 +15,7 @@ export default function cart(catalog, draft) {
 
     return {
         lines: (draft?.items ?? []).filter((i) => byId.has(i.product_id)).map((i) => line(byId.get(i.product_id), i.quantity, i.note)),
-        orderType: draft?.order_type ?? 'dine_in',
+        orderType: draft?.order_type ?? 'take_away',
         customerName: draft?.customer_name ?? '',
         draftId: draft?.id ?? null,
         noteFor: null,

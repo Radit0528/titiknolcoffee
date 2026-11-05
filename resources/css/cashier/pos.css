@@ -122,7 +122,7 @@
         @apply bg-coffee-50 text-ink;
     }
     .cashier-nav-mobile {
-        @apply fixed inset-x-0 bottom-0 z-20 grid grid-cols-3 border-t border-line bg-surface md:hidden;
+        @apply fixed inset-x-0 bottom-0 z-20 grid grid-cols-4 border-t border-line bg-surface md:hidden;
     }
     .cashier-nav-mobile a {
         @apply flex h-14 flex-col items-center justify-center gap-0.5 text-[0.7rem] font-medium text-muted;
@@ -138,5 +138,21 @@
     }
     .shift-chip::before {
         @apply size-1.5 rounded-full bg-current content-[''];
+    }
+}
+
+@layer components {
+    /* Promo banners above the menu (owner → Banner Promo) */
+    .promo-strip {
+        @apply -mx-4 mb-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0;
+    }
+    .promo-card {
+        @apply relative aspect-[16/7] w-72 shrink-0 snap-start overflow-hidden rounded-xl bg-coffee-900 sm:w-80;
+    }
+    .promo-card img {
+        @apply absolute inset-0 size-full object-cover;
+    }
+    .promo-card-text {
+        @apply absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-2.5 text-white;
     }
 }

@@ -9,7 +9,7 @@
 
     <div class="card">
         @if ($categories->isEmpty())
-            <x-ui.empty-state icon="tags" title="Belum ada kategori" description="Buat kategori seperti Kopi, Non-Kopi, atau Makanan sebelum menambahkan produk.">
+            <x-ui.empty-state icon="tags" title="Belum ada kategori" description="Buat kategori seperti Kopi atau Non-Kopi sebelum menambahkan produk.">
                 <x-ui.button :href="route('owner.categories.create')" icon="plus">Tambah kategori</x-ui.button>
             </x-ui.empty-state>
         @else

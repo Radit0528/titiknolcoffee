@@ -12,6 +12,13 @@
         @if ($settings['store_phone'])<div>Telp. {{ $settings['store_phone'] }}</div>@endif
     </div>
 
+    @if ($order->status === \App\Enums\OrderStatus::Void)
+        <div class="receipt-void">
+            DIBATALKAN
+            @if ($order->voidRecord)<small>{{ $order->voidRecord->created_at->format('d/m/Y H:i') }} · {{ $order->voidRecord->reason }}</small>@endif
+        </div>
+    @endif
+
     <hr class="receipt-rule">
 
     <div class="receipt-row"><span>No</span><span>{{ $order->code }}</span></div>

@@ -93,7 +93,7 @@ class VoucherAndSettingsTest extends TestCase
         $cashier = $this->cashier();
 
         return Order::create([
-            'user_id' => $cashier->id, 'status' => 'paid', 'order_type' => 'dine_in',
+            'user_id' => $cashier->id, 'status' => 'paid', 'order_type' => 'take_away',
         ])->id;
     }
 }

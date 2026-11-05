@@ -55,7 +55,7 @@ class ShiftAndDraftTest extends PosTestCase
         $this->actingAs($this->cashier)->postJson('/kasir/draft', [
             'items' => [['product_id' => $this->kopi->id, 'quantity' => 3, 'note' => 'es dikit']],
             'order_type' => 'take_away',
-            'customer_name' => 'Meja 4',
+            'customer_name' => 'Budi',
         ])->assertOk()->assertJson(['redirect' => route('cashier.pos')]);
 
         $draft = Order::sole();
@@ -65,14 +65,14 @@ class ShiftAndDraftTest extends PosTestCase
         $this->assertDatabaseCount('stock_mutations', 0);
         $this->assertSame('1000.000', $this->ing['milk']->fresh()->stock);
 
-        $this->actingAs($this->cashier)->get('/kasir/draft')->assertOk()->assertSee('Meja 4');
+        $this->actingAs($this->cashier)->get('/kasir/draft')->assertOk()->assertSee('Budi');
     }
 
     public function test_draft_resumes_into_pos_and_is_replaced_by_the_paid_order(): void
     {
         $this->actingAs($this->cashier)->postJson('/kasir/draft', [
             'items' => [['product_id' => $this->kopi->id, 'quantity' => 1]],
-            'order_type' => 'dine_in',
+            'order_type' => 'take_away',
         ]);
         $draft = Order::sole();
 
@@ -88,11 +88,11 @@ class ShiftAndDraftTest extends PosTestCase
 
     public function test_updating_a_draft_replaces_its_items(): void
     {
-        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'dine_in']);
+        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'take_away']);
         $draft = Order::sole();
 
         $this->actingAs($this->cashier)->postJson('/kasir/draft', [
-            'draft_id' => $draft->id, 'items' => [['product_id' => $this->kopi->id, 'quantity' => 4]], 'order_type' => 'dine_in',
+            'draft_id' => $draft->id, 'items' => [['product_id' => $this->kopi->id, 'quantity' => 4]], 'order_type' => 'take_away',
         ])->assertOk();
 
         $this->assertSame(1, Order::count());
@@ -101,7 +101,7 @@ class ShiftAndDraftTest extends PosTestCase
 
     public function test_cashier_cannot_touch_another_cashiers_draft(): void
     {
-        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'dine_in']);
+        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'take_away']);
         $draft = Order::sole();
 
         $other = User::factory()->cashier()->create();

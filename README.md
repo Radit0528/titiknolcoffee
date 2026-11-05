@@ -1,58 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIMKOTOL — Sistem Manajemen Kopi Titik Nol
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi POS dan inventory kedai kopi (Laravel 13, MySQL, Blade, Tailwind CSS 4, Alpine.js).
 
-## About Laravel
+## Status pengerjaan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Tahap | Isi | Status |
+|---|---|---|
+| 1 — Foundation | Laravel, MySQL, Tailwind/Vite, Alpine, login (rate limit), role Owner/Kasir, layout | Selesai |
+| 2 — Master Data | Kategori, produk (+gambar), bahan baku, supplier, resep/BOM + HPP & margin | Selesai |
+| 3 — Inventory | Pembelian (stok masuk), stok keluar, penyesuaian/opname, riwayat mutasi, notifikasi stok menipis | Selesai |
+| 4 — POS | Buka shift, katalog + keranjang, draft/tahan pesanan, voucher, checkout tunai, potong stok otomatis, struk 58/80mm, riwayat transaksi, pengaturan toko, manajemen voucher | Selesai |
+| 6 — Shift | Kas masuk/keluar, ringkasan shift, tutup shift dengan hitung selisih kas, laporan shift (layar & cetak) | Selesai |
+| 7 — Laporan | Dashboard (omzet, laba kotor, grafik 14 hari, menu terlaris), laporan penjualan/laba kotor/bahan baku/shift dengan filter, export PDF & Excel | Selesai |
+| 8 — Keamanan & promo | Staf kasir (tambah, nonaktifkan, reset password), PIN owner, void transaksi dengan PIN owner, banner promo di layar kasir, halaman audit log | Selesai |
+| 5 — Payment | QRIS Midtrans — **ditunda ke tahap akhir** (sebelum final testing) | Ditunda |
+| 9 | Final testing & dokumentasi | Belum |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalasi di Laragon (Windows)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Syarat: Laragon dengan **PHP 8.4**, MySQL, Composer, Node.js 20+.
+Ekstensi PHP yang dipakai: `pdo_mysql`, `mbstring`, `fileinfo`, `gd` (validasi gambar), `intl`.
+Untuk menjalankan test juga perlu `pdo_sqlite` dan `sqlite3`.
 
-## Learning Laravel
+1. Salin folder `simkotol` ke `C:\laragon\www\simkotol`.
+2. Buka **Terminal** Laragon di folder tersebut, lalu jalankan:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+   ```bash
+   composer install
+   copy .env.example .env
+   php artisan key:generate
+   ```
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Buat database `simkotol` (Laragon → Database, atau `mysql -u root -e "CREATE DATABASE simkotol"`).
+   `.env.example` sudah memakai user `root` tanpa password (bawaan Laragon). Sesuaikan jika berbeda.
+4. Migrasi, data awal, dan aset:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+   ```bash
+   php artisan migrate --seed
+   php artisan storage:link
+   npm install
+   npm run build
+   ```
 
-## Agentic Development
+5. Buka `http://simkotol.test` (Laragon → Reload agar virtual host terbentuk),
+   atau jalankan `php artisan serve` lalu buka `http://127.0.0.1:8000`.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Akun awal
+
+| Role | Username | Password |
+|---|---|---|
+| Owner | `owner` | `password` |
+| Kasir | `kasir` | `password` |
+
+**Atur PIN owner** di menu *Akun & PIN* sebelum operasional; tanpa PIN, transaksi tidak bisa di-void.
+
+Kasir harus **membuka shift** (isi modal awal) sebelum bisa bertransaksi. Data contoh juga berisi
+voucher `NGOPIPAGI` (10%, maks Rp5.000, min. belanja Rp20.000).
+
+**Ganti password ini sebelum dipakai untuk operasional.** Seeder data contoh (menu, bahan, supplier)
+hanya berjalan jika `APP_ENV` bukan `production`.
+
+## Pengembangan
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+npm run dev            # Vite + hot reload (jalankan bersama php artisan serve)
+php artisan test       # seluruh test (SQLite in-memory)
+./vendor/bin/pint      # format kode
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Keputusan desain yang perlu diketahui
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Stok tidak bisa diedit langsung.** Setiap perubahan (stok awal, pembelian, stok keluar, penyesuaian)
+  tercatat di `stock_mutations` dengan stok sebelum/sesudah, harga, user, dan alasan.
+- **Harga modal = rata-rata tertimbang.** Saat pembelian: `(stok × harga lama + jumlah beli × harga beli) / (stok + jumlah beli)`.
+  Harga yang benar-benar dibayar tetap tersimpan di detail pembelian dan mutasi.
+- **Pembelian tidak bisa diedit/dihapus** karena stoknya sudah masuk ke ledger. Salah input dikoreksi
+  lewat penyesuaian stok (tercatat dengan alasan).
+- **Stok tidak bisa minus.** Pengurangan stok memakai `lockForUpdate()` di dalam transaksi database;
+  sudah diuji dengan 5 proses bersamaan di MySQL/MariaDB.
+- **Satuan bahan terkunci setelah dibuat**, karena takaran resep bergantung pada satuan itu.
+- **HPP dihitung langsung** dari resep × harga modal bahan saat ini (tidak disimpan sebagai cache
+  yang bisa basi). Snapshot HPP disimpan per transaksi saat modul POS dibuat (Tahap 4).
+- **Produk, bahan, dan supplier di-soft-delete** agar riwayat transaksi dan mutasi stok tetap utuh.
+  Kategori yang pernah punya produk tidak bisa dihapus; nonaktifkan saja.
+- **Font di-host sendiri** (`@fontsource-variable/plus-jakarta-sans`) sehingga tampilan tetap benar
+  walau internet kedai mati.
+- **Checkout dihitung ulang di server.** Browser hanya mengirim id produk, jumlah, catatan, dan kode voucher.
+  Harga, diskon, pajak, service charge, dan total dihitung `CheckoutService`; harga & HPP disimpan sebagai
+  snapshot di `order_items`.
+- **Rumus total:** service = (subtotal − diskon) × service%; pajak = (subtotal − diskon + service) × pajak%;
+  pembulatan tunai ke kelipatan terdekat (pengaturan toko).
+- **Anti double-submit:** setiap checkout membawa `client_token` (UUID, unik di database). Klik ganda atau
+  kirim ulang mengembalikan pesanan yang sama; sudah diuji 4 request bersamaan → 1 pesanan.
+- **Satu shift aktif per kasir** dijamin oleh index unik `shifts.open_user_id`.
+- Draft (tahan pesanan) tidak mengurangi stok dan tidak memakai kuota voucher.
+- Nomor transaksi `TN-YYMMDD-NNNNN` diambil dari id, jadi bisa melompat jika ada checkout yang ditolak.
+- **Tutup shift:** uang seharusnya = modal awal + penjualan tunai + kas masuk − kas keluar; selisih = uang fisik −
+  uang seharusnya. Selisih selain nol wajib diberi catatan. Kas keluar tidak boleh melebihi isi laci (dikunci
+  per shift, diuji 2 proses bersamaan). Shift ditolak ditutup jika masih ada transaksi menunggu pembayaran.
+- **Laporan laba kotor:** pendapatan = subtotal − diskon + service charge (pajak bukan pendapatan); laba kotor =
+  pendapatan − HPP snapshot transaksi; nilai bahan terbuang ditampilkan terpisah.
+- **Laporan bahan baku** dihitung dari mutasi stok: stok awal = jumlah mutasi sebelum periode, sehingga stok akhir
+  selalu cocok dengan stok di sistem.
+- Laporan web, PDF, dan Excel dibangun dari satu sumber data (`ReportService`), jadi angkanya selalu sama.
+  Excel menyimpan angka sebagai angka (bukan teks) agar bisa dihitung lanjut.
+- **Void transaksi** hanya untuk transaksi lunas yang shift-nya masih terbuka, wajib alasan dan **PIN owner**
+  (juga saat owner sendiri yang login). Efeknya: status `void`, stok bahan dikembalikan persis sebanyak yang dipotong
+  (mutasi "Pengembalian (void)"), kuota voucher dikembalikan, dan transaksi keluar dari penjualan/laporan/kas shift.
+  Uang dikembalikan ke pelanggan secara manual. Sudah diuji 4 void bersamaan → 1 berhasil, stok kembali sekali.
+- **PIN owner** 6 angka disimpan sebagai hash. Salah 5 kali → dikunci 5 menit per pengguna yang mencoba, dan setiap
+  PIN salah tercatat di audit log. Mengganti PIN wajib memasukkan password owner; PIN yang mudah ditebak (123456, 111111, …) ditolak.
+- **Akun kasir tidak dihapus**, hanya dinonaktifkan (riwayat tetap utuh). Akun nonaktif langsung keluar dari semua
+  perangkat. Kasir yang shift-nya masih terbuka tidak bisa dinonaktifkan. Reset password juga mengeluarkan kasir dari semua perangkat.
+- **Audit log hanya bisa dibaca**, tidak ada fitur ubah/hapus.
+- Banner promo tampil di layar kasir hanya jika aktif dan berada dalam periode tayang.
+- Login memakai **username** (bukan email), dibatasi 5 percobaan gagal per username+IP per menit.

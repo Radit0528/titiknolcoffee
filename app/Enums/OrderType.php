@@ -2,15 +2,17 @@
 
 namespace App\Enums;
 
+/**
+ * Titik Nol is a container outlet with no seating, so every order is take away.
+ * Kept as an enum so a new channel (e.g. online delivery) can be added later.
+ */
 enum OrderType: string
 {
-    case DineIn = 'dine_in';
     case TakeAway = 'take_away';
 
     public function label(): string
     {
         return match ($this) {
-            self::DineIn => 'Dine In',
             self::TakeAway => 'Take Away',
         };
     }

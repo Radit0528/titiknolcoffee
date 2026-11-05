@@ -18,6 +18,20 @@
                 @endif
             </div>
 
+            @if ($banners->isNotEmpty())
+                <div class="promo-strip" aria-label="Promo">
+                    @foreach ($banners as $banner)
+                        <figure class="promo-card">
+                            <img src="{{ $banner->imageUrl() }}" alt="" loading="lazy">
+                            <figcaption class="promo-card-text">
+                                <p class="text-sm leading-tight font-bold">{{ $banner->title }}</p>
+                                @if ($banner->description)<p class="mt-0.5 line-clamp-2 text-xs text-white/85">{{ $banner->description }}</p>@endif
+                            </figcaption>
+                        </figure>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="category-tabs" role="toolbar" aria-label="Filter kategori">
                 <button type="button" class="category-tab" x-on:click="category = 'all'" x-bind:aria-pressed="category === 'all'">Semua</button>
                 @foreach ($categories as $category)
@@ -65,11 +79,13 @@
             </div>
 
             <div class="flex flex-col gap-3 border-b border-line px-5 py-3">
-                <div class="segmented" role="group" aria-label="Jenis pesanan">
-                    @foreach ($orderTypes as $type)
-                        <button type="button" x-on:click="orderType = '{{ $type->value }}'" x-bind:aria-pressed="orderType === '{{ $type->value }}'">{{ $type->label() }}</button>
-                    @endforeach
-                </div>
+                @if (count($orderTypes) > 1)
+                    <div class="segmented" role="group" aria-label="Jenis pesanan">
+                        @foreach ($orderTypes as $type)
+                            <button type="button" x-on:click="orderType = '{{ $type->value }}'" x-bind:aria-pressed="orderType === '{{ $type->value }}'">{{ $type->label() }}</button>
+                        @endforeach
+                    </div>
+                @endif
                 <input type="text" x-model="customerName" maxlength="100" placeholder="Nama pelanggan (opsional)" class="input h-9" aria-label="Nama pelanggan">
             </div>
 
@@ -172,7 +188,7 @@
                         <label for="cash" class="label">Uang diterima</label>
                         <div class="input-group">
                             <span class="input-addon">Rp</span>
-                            <input id="cash" x-ref="cash" type="number" inputmode="numeric" min="0" step="500" class="input cash-input" x-model="cashReceived"
+                            <input id="cash" x-ref="cash" type="number" inputmode="numeric" min="0" step="1" class="input cash-input" x-model="cashReceived"
                                    x-on:keydown.enter.prevent="pay" placeholder="0">
                         </div>
                         <div class="cash-options">
@@ -193,7 +209,7 @@
                             <span x-show="!busy">Selesaikan pembayaran</span>
                             <span x-show="busy" x-cloak>Memproses…</span>
                         </x-ui.button>
-                        <p class="hint text-center">Pembayaran QRIS tersedia setelah integrasi Midtrans (Tahap 5).</p>
+                        <p class="hint text-center">Pembayaran QRIS ditambahkan di tahap akhir.</p>
                     </div>
                 </div>
             </div>

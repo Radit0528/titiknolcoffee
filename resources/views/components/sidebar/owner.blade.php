@@ -14,6 +14,7 @@
     <nav class="sidebar-nav">
         <x-sidebar.link route="owner.dashboard" icon="layout-dashboard">Dashboard</x-sidebar.link>
         <x-sidebar.link route="orders.index" active="orders.*" icon="receipt-text">Transaksi</x-sidebar.link>
+        <x-sidebar.link route="owner.reports.index" active="owner.reports.*" icon="chart-column">Laporan</x-sidebar.link>
 
         <p class="sidebar-section">Menu</p>
         <x-sidebar.link route="owner.products.index" active="owner.products.*" icon="coffee">Produk</x-sidebar.link>
@@ -28,7 +29,13 @@
 
         <p class="sidebar-section">Toko</p>
         <x-sidebar.link route="owner.vouchers.index" active="owner.vouchers.*" icon="ticket">Voucher</x-sidebar.link>
+        <x-sidebar.link route="owner.banners.index" active="owner.banners.*" icon="megaphone">Banner Promo</x-sidebar.link>
         <x-sidebar.link route="owner.settings.edit" icon="settings">Pengaturan</x-sidebar.link>
+
+        <p class="sidebar-section">Keamanan</p>
+        <x-sidebar.link route="owner.staff.index" active="owner.staff.*" icon="users">Staf Kasir</x-sidebar.link>
+        <x-sidebar.link route="owner.account.edit" icon="key-round">Akun &amp; PIN</x-sidebar.link>
+        <x-sidebar.link route="owner.audit.index" icon="history">Audit Log</x-sidebar.link>
     </nav>
 
     <div class="sidebar-footer">

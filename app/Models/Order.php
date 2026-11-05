@@ -63,6 +63,11 @@ class Order extends Model
         return $this->belongsTo(Shift::class);
     }
 
+    public function voidRecord(): HasOne
+    {
+        return $this->hasOne(OrderVoid::class);
+    }
+
     public function voucher(): BelongsTo
     {
         return $this->belongsTo(Voucher::class);

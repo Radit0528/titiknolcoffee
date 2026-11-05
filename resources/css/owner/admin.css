@@ -1,0 +1,31 @@
+@layer components {
+    /* Banner list: image cards */
+    .banner-admin-grid {
+        @apply grid gap-4 sm:grid-cols-2 xl:grid-cols-3;
+    }
+    .banner-admin-image {
+        @apply aspect-[16/7] w-full bg-coffee-50 object-cover;
+    }
+
+    /* Audit log: key → old → new */
+    .audit-changes {
+        @apply flex min-w-56 flex-col gap-1;
+    }
+    .audit-changes > div {
+        @apply grid grid-cols-[7.5rem_1fr] gap-2;
+    }
+    .audit-changes dt {
+        @apply truncate text-xs text-muted;
+    }
+    .audit-changes dd {
+        @apply flex flex-wrap items-center gap-1.5 break-all;
+    }
+    .audit-old {
+        @apply text-muted line-through;
+    }
+
+    /* Void notice on the order page */
+    .void-notice {
+        @apply flex items-start gap-4 rounded-xl border border-danger/30 bg-danger-soft p-5 text-danger;
+    }
+}

@@ -8,6 +8,7 @@ use App\Exceptions\CheckoutException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cashier\CartRequest;
 use App\Http\Requests\Cashier\CheckoutRequest;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Order;
 use App\Services\CheckoutService;
@@ -59,6 +60,7 @@ class PosController extends Controller
         return view('cashier.pos.index', [
             'categories' => $categories,
             'catalog' => $catalog,
+            'banners' => Banner::showing()->limit(6)->get(),
             'draft' => $draft ? [
                 'id' => $draft->id,
                 'order_type' => $draft->order_type->value,

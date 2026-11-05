@@ -28,7 +28,7 @@ enum StockMutationType: string
     public function badge(): string
     {
         return match ($this) {
-            self::Initial, self::Purchase => 'success',
+            self::Initial, self::Purchase, self::VoidReturn => 'success',
             self::Sale => 'neutral',
             self::Adjustment => 'warning',
             default => 'danger',
@@ -42,6 +42,7 @@ enum StockMutationType: string
     case Expired = 'expired';
     case Spilled = 'spilled';
     case Adjustment = 'adjustment';
+    case VoidReturn = 'void';     // stock put back when a paid order is voided
 
     public function label(): string
     {
@@ -53,6 +54,7 @@ enum StockMutationType: string
             self::Expired => 'Kedaluwarsa',
             self::Spilled => 'Tumpah/terbuang',
             self::Adjustment => 'Penyesuaian stok',
+            self::VoidReturn => 'Pengembalian (void)',
         };
     }
 }

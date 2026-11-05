@@ -40,3 +40,25 @@
         @apply text-xs text-muted;
     }
 }
+
+@layer components {
+    /* Report type tabs */
+    .report-tabs {
+        @apply mb-4 flex gap-1 overflow-x-auto border-b border-line;
+    }
+    .report-tabs a {
+        @apply -mb-px shrink-0 border-b-2 border-transparent px-4 py-2.5 text-sm font-medium text-muted hover:text-ink;
+    }
+    .report-tabs a[aria-current='page'] {
+        @apply border-accent text-ink;
+    }
+    .report-total td {
+        @apply border-t-2 border-coffee-900/15 bg-coffee-50/60 font-semibold;
+    }
+}
+
+@layer components {
+    .chart-box {
+        @apply relative h-64 sm:h-72;
+    }
+}

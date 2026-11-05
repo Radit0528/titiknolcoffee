@@ -1,0 +1,82 @@
+/* Report PDF (DomPDF). Plain CSS 2.1 — DomPDF has no flexbox/grid. */
+@page {
+    margin: 18mm 14mm;
+}
+body {
+    font-family: 'DejaVu Sans', sans-serif;
+    font-size: 9.5px;
+    color: #22160f;
+}
+header {
+    border-bottom: 2px solid #2e1810;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+.store {
+    font-size: 10px;
+    font-weight: bold;
+    color: #d97706;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+h1 {
+    font-size: 18px;
+    margin: 2px 0;
+}
+h2 {
+    font-size: 12px;
+    margin: 18px 0 6px;
+}
+.muted {
+    color: #7a6a5f;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.summary td {
+    border: 1px solid #ebe5df;
+    padding: 8px;
+    vertical-align: top;
+}
+.summary .label {
+    font-size: 8px;
+    text-transform: uppercase;
+    color: #7a6a5f;
+}
+.summary .value {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 3px;
+}
+.data th {
+    background: #f7f2ee;
+    text-align: left;
+    font-size: 8px;
+    text-transform: uppercase;
+    color: #5c4033;
+    padding: 5px 6px;
+    border-bottom: 1px solid #c9b5a6;
+}
+.data td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #ebe5df;
+}
+.data tfoot td {
+    font-weight: bold;
+    border-top: 1.5px solid #2e1810;
+    border-bottom: none;
+}
+.num {
+    text-align: right;
+}
+.notes {
+    margin-top: 16px;
+    padding: 8px 10px;
+    background: #f7f2ee;
+    font-size: 8.5px;
+    color: #5c4033;
+}
+.notes p {
+    margin: 2px 0;
+}

@@ -42,7 +42,7 @@
                     <x-form.field label="Harga jual" for="price" required>
                         <div class="input-group">
                             <span class="input-addon">Rp</span>
-                            <input id="price" name="price" type="number" min="0" step="500" required inputmode="numeric"
+                            <input id="price" name="price" type="number" min="0" step="1" required inputmode="numeric"
                                    value="{{ old('price', $product->price !== null ? (int) $product->price : '') }}"
                                    @class(['input', 'input-invalid' => $errors->has('price')])>
                         </div>

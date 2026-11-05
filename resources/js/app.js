@@ -27,3 +27,9 @@ window.Alpine = Alpine;
 // Icons first, so Alpine clones templates that already contain SVGs.
 renderIcons();
 Alpine.start();
+
+// Chart.js is only downloaded on pages that have a chart (owner dashboard).
+const chart = document.querySelector('[data-chart]');
+if (chart) {
+    import('./owner/dashboard').then(({ renderSalesChart }) => renderSalesChart(chart));
+}

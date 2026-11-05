@@ -66,7 +66,7 @@ class ReceiptTest extends PosTestCase
 
     public function test_drafts_have_no_receipt(): void
     {
-        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'dine_in']);
+        $this->actingAs($this->cashier)->postJson('/kasir/draft', ['items' => [['product_id' => $this->kopi->id, 'quantity' => 1]], 'order_type' => 'take_away']);
 
         $this->actingAs($this->cashier)->get('/transaksi/'.Order::sole()->id)->assertNotFound();
     }
