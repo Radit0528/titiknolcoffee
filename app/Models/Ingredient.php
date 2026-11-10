@@ -7,7 +7,6 @@ use App\Enums\StockStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -19,7 +18,7 @@ class Ingredient extends Model
      * `stock` is deliberately not fillable: it only changes through
      * InventoryService so that every change leaves a stock mutation.
      */
-    protected $fillable = ['supplier_id', 'name', 'unit', 'min_stock', 'cost_per_unit'];
+    protected $fillable = ['name', 'unit', 'min_stock', 'cost_per_unit'];
 
     protected function casts(): array
     {
@@ -29,11 +28,6 @@ class Ingredient extends Model
             'min_stock' => 'decimal:3',
             'cost_per_unit' => 'decimal:4',
         ];
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class)->withTrashed();
     }
 
     public function mutations(): HasMany

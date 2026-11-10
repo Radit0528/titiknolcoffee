@@ -5,9 +5,9 @@ namespace Tests\Feature\Owner;
 use App\Enums\StockMutationType;
 use App\Models\Ingredient;
 use App\Models\Product;
-use App\Models\Supplier;
 use App\Services\RecipeService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class IngredientManagementTest extends TestCase
@@ -17,12 +17,10 @@ class IngredientManagementTest extends TestCase
     public function test_owner_creates_ingredient_and_opening_stock_is_recorded_as_mutation(): void
     {
         $owner = $this->owner();
-        $supplier = Supplier::factory()->create();
 
         $this->actingAs($owner)->post('/owner/ingredients', [
             'name' => 'Susu Segar',
             'unit' => 'ml',
-            'supplier_id' => $supplier->id,
             'min_stock' => 3000,
             'cost_per_unit' => 20,
             'initial_stock' => 8000,
@@ -37,6 +35,17 @@ class IngredientManagementTest extends TestCase
         $this->assertSame('0.000', $mutation->stock_before);
         $this->assertSame('8000.000', $mutation->stock_after);
         $this->assertSame($owner->id, $mutation->user_id);
+    }
+
+    public function test_supplier_feature_is_removed(): void
+    {
+        $this->actingAs($this->owner())->get('/owner/suppliers')->assertNotFound();
+        $this->actingAs($this->owner())->get('/owner/ingredients/create')->assertOk()->assertDontSee('Supplier');
+        $this->actingAs($this->owner())->get('/owner/purchases/create')->assertOk()->assertDontSee('Supplier');
+
+        $this->assertFalse(Schema::hasTable('suppliers'));
+        $this->assertFalse(Schema::hasColumn('ingredients', 'supplier_id'));
+        $this->assertFalse(Schema::hasColumn('purchases', 'supplier_id'));
     }
 
     public function test_zero_opening_stock_creates_no_mutation(): void

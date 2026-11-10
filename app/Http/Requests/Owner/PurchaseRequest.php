@@ -18,7 +18,6 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'supplier_id' => ['nullable', 'integer', Rule::exists('suppliers', 'id')->whereNull('deleted_at')],
             'invoice_number' => ['nullable', 'string', 'max:50'],
             'purchased_at' => ['required', 'date', 'before_or_equal:today'],
             'notes' => ['nullable', 'string', 'max:1000'],
@@ -32,7 +31,6 @@ class PurchaseRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'supplier_id' => 'supplier',
             'invoice_number' => 'nomor nota',
             'purchased_at' => 'tanggal pembelian',
             'items' => 'daftar bahan',
@@ -56,7 +54,7 @@ class PurchaseRequest extends FormRequest
      */
     public function purchaseHeader(): array
     {
-        return $this->safe()->only(['supplier_id', 'invoice_number', 'purchased_at', 'notes']);
+        return $this->safe()->only(['invoice_number', 'purchased_at', 'notes']);
     }
 
     /**

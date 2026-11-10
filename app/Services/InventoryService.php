@@ -81,7 +81,7 @@ class InventoryService
      * Ingredients are locked in id order so two purchases touching the same
      * ingredients cannot deadlock each other.
      *
-     * @param  array{supplier_id?: int|null, invoice_number?: string|null, purchased_at: string, notes?: string|null}  $header
+     * @param  array{invoice_number?: string|null, purchased_at: string, notes?: string|null}  $header
      * @param  array<int, array{ingredient_id: int, quantity: float|string, subtotal: float|string}>  $items
      */
     public function recordPurchase(array $header, array $items): Purchase
@@ -94,7 +94,6 @@ class InventoryService
 
         return DB::transaction(function () use ($header, $items) {
             $purchase = Purchase::create([
-                'supplier_id' => $header['supplier_id'] ?? null,
                 'invoice_number' => $header['invoice_number'] ?? null,
                 'purchased_at' => $header['purchased_at'],
                 'notes' => $header['notes'] ?? null,

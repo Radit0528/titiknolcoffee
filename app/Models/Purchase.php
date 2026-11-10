@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Purchase extends Model
 {
-    protected $fillable = ['code', 'supplier_id', 'user_id', 'invoice_number', 'purchased_at', 'total', 'notes'];
+    protected $fillable = ['code', 'user_id', 'invoice_number', 'purchased_at', 'total', 'notes'];
 
     protected function casts(): array
     {
@@ -17,11 +17,6 @@ class Purchase extends Model
             'purchased_at' => 'date',
             'total' => 'decimal:2',
         ];
-    }
-
-    public function supplier(): BelongsTo
-    {
-        return $this->belongsTo(Supplier::class)->withTrashed();
     }
 
     public function user(): BelongsTo

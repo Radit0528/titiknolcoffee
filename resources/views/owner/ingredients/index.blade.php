@@ -56,10 +56,7 @@
                         @foreach ($ingredients as $ingredient)
                             @php($state = $ingredient->stockStatus())
                             <tr>
-                                <td>
-                                    <p class="font-medium">{{ $ingredient->name }}</p>
-                                    <p class="text-xs text-muted">{{ $ingredient->supplier?->name ?? 'Tanpa supplier' }}</p>
-                                </td>
+                                <td class="font-medium">{{ $ingredient->name }}</td>
                                 <td class="num font-medium">{{ Format::qty($ingredient->stock) }} <span class="text-xs text-muted">{{ $ingredient->unit->label() }}</span></td>
                                 <td class="num text-muted">{{ Format::qty($ingredient->min_stock) }}</td>
                                 <td class="num">{{ Format::unitCost($ingredient->cost_per_unit) }}<span class="text-xs text-muted">/{{ $ingredient->unit->label() }}</span></td>

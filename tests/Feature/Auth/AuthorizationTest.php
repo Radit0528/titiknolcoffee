@@ -21,7 +21,6 @@ class AuthorizationTest extends TestCase
             'categories' => ['/owner/categories'],
             'products' => ['/owner/products'],
             'ingredients' => ['/owner/ingredients'],
-            'suppliers' => ['/owner/suppliers'],
             'recipes' => ['/owner/recipes'],
         ];
     }

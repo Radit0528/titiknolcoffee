@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\PurchaseRequest;
 use App\Models\Ingredient;
 use App\Models\Purchase;
-use App\Models\Supplier;
 use App\Services\InventoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,22 +22,18 @@ class PurchaseController extends Controller
     {
         $from = $this->dateFilter($request->query('from'));
         $to = $this->dateFilter($request->query('to'));
-        $supplierId = $request->integer('supplier') ?: null;
 
         $query = Purchase::query()
             ->when($from, fn ($q) => $q->whereDate('purchased_at', '>=', $from))
-            ->when($to, fn ($q) => $q->whereDate('purchased_at', '<=', $to))
-            ->when($supplierId, fn ($q) => $q->where('supplier_id', $supplierId));
+            ->when($to, fn ($q) => $q->whereDate('purchased_at', '<=', $to));
 
         return view('owner.purchases.index', [
-            'purchases' => (clone $query)->with(['supplier', 'user'])->withCount('items')
+            'purchases' => (clone $query)->with('user')->withCount('items')
                 ->latest('purchased_at')->latest('id')
                 ->paginate(15)->withQueryString(),
             'periodTotal' => (float) (clone $query)->sum('total'),
-            'suppliers' => Supplier::withTrashed()->orderBy('name')->get(),
             'from' => $from?->toDateString(),
             'to' => $to?->toDateString(),
-            'supplierId' => $supplierId,
         ]);
     }
 
@@ -47,12 +42,10 @@ class PurchaseController extends Controller
         $ingredients = Ingredient::orderBy('name')->get();
 
         return view('owner.purchases.create', [
-            'suppliers' => Supplier::orderBy('name')->get(),
             'ingredientOptions' => $ingredients->map(fn (Ingredient $i) => [
                 'id' => $i->id,
                 'name' => $i->name,
                 'unit' => $i->unit->label(),
-                'supplier_id' => $i->supplier_id,
             ])->values(),
             // "Beli lagi" from the ingredient list pre-fills that ingredient.
             'initialItems' => old('items', $request->integer('ingredient')
@@ -71,7 +64,7 @@ class PurchaseController extends Controller
 
     public function show(Purchase $purchase): View
     {
-        $purchase->load(['items.ingredient', 'supplier', 'user']);
+        $purchase->load(['items.ingredient', 'user']);
 
         return view('owner.purchases.show', compact('purchase'));
     }

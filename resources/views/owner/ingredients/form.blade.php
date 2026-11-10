@@ -19,29 +19,18 @@
                            @class(['input', 'input-invalid' => $errors->has('name')])>
                 </x-form.field>
 
-                <div class="grid gap-5 sm:grid-cols-2">
-                    <x-form.field label="Satuan" for="unit" :required="! $ingredient->exists"
-                                  :hint="$ingredient->exists ? 'Satuan tidak dapat diubah karena takaran resep bergantung padanya.' : 'Gunakan satuan terkecil yang dipakai di resep.'">
-                        @if ($ingredient->exists)
-                            <input id="unit" type="text" value="{{ $ingredient->unit->label() }}" class="input" disabled>
-                        @else
-                            <select id="unit" name="unit" required @class(['select', 'input-invalid' => $errors->has('unit')])>
-                                @foreach ($units as $unit)
-                                    <option value="{{ $unit->value }}" @selected(old('unit') === $unit->value)>{{ $unit->label() }}</option>
-                                @endforeach
-                            </select>
-                        @endif
-                    </x-form.field>
-
-                    <x-form.field label="Supplier" for="supplier_id">
-                        <select id="supplier_id" name="supplier_id" @class(['select', 'input-invalid' => $errors->has('supplier_id')])>
-                            <option value="">Tanpa supplier</option>
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}" @selected((int) old('supplier_id', $ingredient->supplier_id) === $supplier->id)>{{ $supplier->name }}</option>
+                <x-form.field label="Satuan" for="unit" :required="! $ingredient->exists"
+                              :hint="$ingredient->exists ? 'Satuan tidak dapat diubah karena takaran resep bergantung padanya.' : 'Gunakan satuan terkecil yang dipakai di resep.'">
+                    @if ($ingredient->exists)
+                        <input id="unit" type="text" value="{{ $ingredient->unit->label() }}" class="input" disabled>
+                    @else
+                        <select id="unit" name="unit" required @class(['select', 'input-invalid' => $errors->has('unit')])>
+                            @foreach ($units as $unit)
+                                <option value="{{ $unit->value }}" @selected(old('unit') === $unit->value)>{{ $unit->label() }}</option>
                             @endforeach
                         </select>
-                    </x-form.field>
-                </div>
+                    @endif
+                </x-form.field>
 
                 <div class="grid gap-5 sm:grid-cols-2">
                     <x-form.field label="Harga modal per satuan" for="cost_per_unit" hint="Contoh: susu 1 liter Rp20.000 → 20 per ml. Diperbarui otomatis (rata-rata) saat ada pembelian." required>

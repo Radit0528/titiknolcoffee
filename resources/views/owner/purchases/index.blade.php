@@ -16,17 +16,9 @@
         <x-form.field label="Sampai" for="to">
             <input id="to" type="date" name="to" value="{{ $to }}" class="input">
         </x-form.field>
-        <x-form.field label="Supplier" for="supplier">
-            <select id="supplier" name="supplier" class="select">
-                <option value="">Semua supplier</option>
-                @foreach ($suppliers as $supplier)
-                    <option value="{{ $supplier->id }}" @selected($supplierId === $supplier->id)>{{ $supplier->name }}</option>
-                @endforeach
-            </select>
-        </x-form.field>
         <div class="flex gap-2">
             <x-ui.button variant="secondary">Terapkan</x-ui.button>
-            @if ($from || $to || $supplierId)
+            @if ($from || $to)
                 <x-ui.button :href="route('owner.purchases.index')" variant="ghost">Reset</x-ui.button>
             @endif
         </div>
@@ -41,7 +33,7 @@
             <div class="table-wrap">
                 <table class="table">
                     <thead>
-                        <tr><th>Kode</th><th>Tanggal</th><th>Supplier</th><th class="num">Bahan</th><th class="num">Total</th><th>Dicatat oleh</th><th class="w-16"></th></tr>
+                        <tr><th>Kode</th><th>Tanggal</th><th class="num">Bahan</th><th class="num">Total</th><th>Dicatat oleh</th><th class="w-16"></th></tr>
                     </thead>
                     <tbody>
                         @foreach ($purchases as $purchase)
@@ -51,7 +43,6 @@
                                     @if ($purchase->invoice_number)<p class="text-xs text-muted">Nota {{ $purchase->invoice_number }}</p>@endif
                                 </td>
                                 <td>{{ $purchase->purchased_at->translatedFormat('d M Y') }}</td>
-                                <td>{{ $purchase->supplier?->name ?? '–' }}</td>
                                 <td class="num">{{ $purchase->items_count }}</td>
                                 <td class="num font-semibold">{{ Format::rupiah($purchase->total) }}</td>
                                 <td class="text-muted">{{ $purchase->user?->name ?? '–' }}</td>
@@ -63,7 +54,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4" class="border-t border-line px-4 py-3 text-sm font-semibold">Total periode ini</td>
+                            <td colspan="3" class="border-t border-line px-4 py-3 text-sm font-semibold">Total periode ini</td>
                             <td class="num border-t border-line px-4 py-3 font-bold">{{ Format::rupiah($periodTotal) }}</td>
                             <td colspan="2" class="border-t border-line"></td>
                         </tr>

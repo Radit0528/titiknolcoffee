@@ -30,7 +30,6 @@ class IngredientRequest extends FormRequest
                 Rule::unique('ingredients', 'name')->ignore($this->route('ingredient'))->whereNull('deleted_at'),
             ],
             'unit' => [$creating ? 'required' : 'prohibited', Rule::enum(IngredientUnit::class)],
-            'supplier_id' => ['nullable', 'integer', Rule::exists('suppliers', 'id')->whereNull('deleted_at')],
             'min_stock' => ['required', 'numeric', 'min:0', 'max:99999999'],
             'cost_per_unit' => ['required', 'numeric', 'min:0', 'max:99999999'],
             'initial_stock' => [$creating ? 'required' : 'prohibited', 'numeric', 'min:0', 'max:99999999'],
@@ -42,7 +41,6 @@ class IngredientRequest extends FormRequest
         return [
             'name' => 'nama bahan',
             'unit' => 'satuan',
-            'supplier_id' => 'supplier',
             'min_stock' => 'minimum stok',
             'cost_per_unit' => 'harga modal per satuan',
             'initial_stock' => 'stok awal',

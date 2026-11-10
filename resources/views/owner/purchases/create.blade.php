@@ -18,20 +18,12 @@
         @csrf
 
         <div class="card">
-            <div class="card-body grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="card-body grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 <x-form.field label="Tanggal pembelian" for="purchased_at" required>
                     <input id="purchased_at" name="purchased_at" type="date" required max="{{ now()->toDateString() }}"
                            value="{{ old('purchased_at', now()->toDateString()) }}" @class(['input', 'input-invalid' => $errors->has('purchased_at')])>
                 </x-form.field>
-                <x-form.field label="Supplier" for="supplier_id">
-                    <select id="supplier_id" name="supplier_id" @class(['select', 'input-invalid' => $errors->has('supplier_id')])>
-                        <option value="">Tanpa supplier</option>
-                        @foreach ($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" @selected((int) old('supplier_id') === $supplier->id)>{{ $supplier->name }}</option>
-                        @endforeach
-                    </select>
-                </x-form.field>
-                <x-form.field label="Nomor nota" for="invoice_number" hint="Opsional, dari nota supplier.">
+                <x-form.field label="Nomor nota" for="invoice_number" hint="Opsional, dari nota pembelian.">
                     <input id="invoice_number" name="invoice_number" type="text" maxlength="50" value="{{ old('invoice_number') }}" class="input">
                 </x-form.field>
                 <x-form.field label="Catatan" for="notes">

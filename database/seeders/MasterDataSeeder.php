@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\IngredientUnit;
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\Supplier;
 use App\Models\Voucher;
 use App\Services\InventoryService;
 use App\Services\RecipeService;
@@ -26,27 +25,22 @@ class MasterDataSeeder extends Seeder
         $kopi = Category::create(['name' => 'Kopi', 'sort_order' => 1]);
         $nonKopi = Category::create(['name' => 'Non-Kopi', 'sort_order' => 2]);
 
-        $roastery = Supplier::create(['name' => 'Sangrai Banyumas Roastery', 'phone' => '081234567890', 'address' => 'Purwokerto']);
-        $dairy = Supplier::create(['name' => 'Susu Segar Baturraden', 'phone' => '082233445566', 'address' => 'Baturraden, Banyumas']);
-        $grosir = Supplier::create(['name' => 'Toko Grosir Sumber Rejeki', 'phone' => '0281123456', 'address' => 'Jl. Jend. Sudirman, Purwokerto']);
-
-        // [name, unit, supplier, opening stock, minimum, cost per unit]
+        // [name, unit, opening stock, minimum, cost per unit]
         $rows = [
-            'beans' => ['Biji Kopi Arabika', IngredientUnit::Gram, $roastery, 3000, 1000, 250],
-            'milk' => ['Susu Segar', IngredientUnit::Ml, $dairy, 8000, 3000, 20],
-            'aren' => ['Gula Aren Cair', IngredientUnit::Ml, $grosir, 2000, 500, 30],
-            'ice' => ['Es Batu', IngredientUnit::Gram, $grosir, 10000, 3000, 1],
-            'matcha' => ['Bubuk Matcha', IngredientUnit::Gram, $grosir, 400, 200, 600],
-            'choco' => ['Bubuk Cokelat', IngredientUnit::Gram, $grosir, 150, 200, 150],
-            'cup' => ['Cup Plastik 16oz', IngredientUnit::Pcs, $grosir, 300, 100, 900],
+            'beans' => ['Biji Kopi Arabika', IngredientUnit::Gram, 3000, 1000, 250],
+            'milk' => ['Susu Segar', IngredientUnit::Ml, 8000, 3000, 20],
+            'aren' => ['Gula Aren Cair', IngredientUnit::Ml, 2000, 500, 30],
+            'ice' => ['Es Batu', IngredientUnit::Gram, 10000, 3000, 1],
+            'matcha' => ['Bubuk Matcha', IngredientUnit::Gram, 400, 200, 600],
+            'choco' => ['Bubuk Cokelat', IngredientUnit::Gram, 150, 200, 150],
+            'cup' => ['Cup Plastik 16oz', IngredientUnit::Pcs, 300, 100, 900],
         ];
 
         $i = [];
-        foreach ($rows as $key => [$name, $unit, $supplier, $stock, $min, $cost]) {
+        foreach ($rows as $key => [$name, $unit, $stock, $min, $cost]) {
             $i[$key] = $inventory->createIngredient([
                 'name' => $name,
                 'unit' => $unit,
-                'supplier_id' => $supplier->id,
                 'min_stock' => $min,
                 'cost_per_unit' => $cost,
             ], $stock);

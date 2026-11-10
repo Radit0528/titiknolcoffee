@@ -14,7 +14,6 @@ class IngredientFactory extends Factory
     public function definition(): array
     {
         return [
-            'supplier_id' => null,
             'name' => fake()->unique()->words(2, true),
             'unit' => IngredientUnit::Ml,
             'stock' => 1000,

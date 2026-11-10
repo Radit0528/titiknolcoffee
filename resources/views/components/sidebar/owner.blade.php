@@ -25,7 +25,6 @@
         <x-sidebar.link route="owner.ingredients.index" active="owner.ingredients.*" icon="boxes" :badge="$lowStockCount ?: null">Bahan Baku</x-sidebar.link>
         <x-sidebar.link route="owner.purchases.index" active="owner.purchases.*" icon="shopping-basket">Pembelian</x-sidebar.link>
         <x-sidebar.link route="owner.stock.index" active="owner.stock.*" icon="arrow-left-right">Mutasi Stok</x-sidebar.link>
-        <x-sidebar.link route="owner.suppliers.index" active="owner.suppliers.*" icon="truck">Supplier</x-sidebar.link>
 
         <p class="sidebar-section">Toko</p>
         <x-sidebar.link route="owner.vouchers.index" active="owner.vouchers.*" icon="ticket">Voucher</x-sidebar.link>

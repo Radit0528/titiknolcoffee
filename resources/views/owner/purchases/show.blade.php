@@ -38,7 +38,6 @@
         <div class="card self-start">
             <div class="card-header"><h2 class="card-title">Informasi</h2></div>
             <dl class="costing-list px-5 py-2">
-                <div><dt>Supplier</dt><dd>{{ $purchase->supplier?->name ?? '–' }}</dd></div>
                 <div><dt>Nomor nota</dt><dd>{{ $purchase->invoice_number ?? '–' }}</dd></div>
                 <div><dt>Dicatat oleh</dt><dd>{{ $purchase->user?->name ?? '–' }}</dd></div>
                 <div><dt>Waktu input</dt><dd>{{ $purchase->created_at->translatedFormat('d M Y H:i') }}</dd></div>

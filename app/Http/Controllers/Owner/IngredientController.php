@@ -7,7 +7,6 @@ use App\Enums\StockStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\IngredientRequest;
 use App\Models\Ingredient;
-use App\Models\Supplier;
 use App\Services\InventoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +22,6 @@ class IngredientController extends Controller
         $status = StockStatus::tryFrom((string) $request->query('status'));
 
         $ingredients = Ingredient::query()
-            ->with('supplier')
             ->when($search !== '', fn ($q) => $q->where('name', 'like', '%'.$search.'%'))
             ->when($status === StockStatus::Empty, fn ($q) => $q->where('stock', '<=', 0))
             ->when($status === StockStatus::Low, fn ($q) => $q->where('stock', '>', 0)->whereColumn('stock', '<=', 'min_stock'))
@@ -45,7 +43,6 @@ class IngredientController extends Controller
     {
         return view('owner.ingredients.form', [
             'ingredient' => new Ingredient,
-            'suppliers' => Supplier::orderBy('name')->get(),
             'units' => IngredientUnit::cases(),
         ]);
     }
@@ -61,7 +58,6 @@ class IngredientController extends Controller
     {
         return view('owner.ingredients.form', [
             'ingredient' => $ingredient,
-            'suppliers' => Supplier::orderBy('name')->get(),
             'units' => IngredientUnit::cases(),
             'mutations' => $ingredient->mutations()->with('user')->latest('id')->limit(10)->get(),
         ]);

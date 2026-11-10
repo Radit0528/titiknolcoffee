@@ -5,7 +5,6 @@ namespace Tests\Feature\Owner;
 use App\Enums\StockMutationType;
 use App\Models\Ingredient;
 use App\Models\Purchase;
-use App\Models\Supplier;
 use App\Services\InventoryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,12 +16,10 @@ class PurchaseTest extends TestCase
     public function test_purchase_adds_stock_records_mutations_and_computes_total(): void
     {
         $owner = $this->owner();
-        $supplier = Supplier::factory()->create();
         $milk = Ingredient::factory()->create(['name' => 'Susu', 'unit' => 'ml', 'stock' => 0, 'cost_per_unit' => 0]);
         $beans = Ingredient::factory()->create(['name' => 'Biji Kopi', 'unit' => 'gram', 'stock' => 0, 'cost_per_unit' => 0]);
 
         $response = $this->actingAs($owner)->post('/owner/purchases', [
-            'supplier_id' => $supplier->id,
             'invoice_number' => 'INV-77',
             'purchased_at' => now()->toDateString(),
             'total' => 1, // ignored: the server computes the total

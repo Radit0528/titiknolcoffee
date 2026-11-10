@@ -7,7 +7,7 @@ Aplikasi POS dan inventory kedai kopi (Laravel 13, MySQL, Blade, Tailwind CSS 4,
 | Tahap | Isi | Status |
 |---|---|---|
 | 1 — Foundation | Laravel, MySQL, Tailwind/Vite, Alpine, login (rate limit), role Owner/Kasir, layout | Selesai |
-| 2 — Master Data | Kategori, produk (+gambar), bahan baku, supplier, resep/BOM + HPP & margin | Selesai |
+| 2 — Master Data | Kategori, produk (+gambar), bahan baku, resep/BOM + HPP & margin | Selesai |
 | 3 — Inventory | Pembelian (stok masuk), stok keluar, penyesuaian/opname, riwayat mutasi, notifikasi stok menipis | Selesai |
 | 4 — POS | Buka shift, katalog + keranjang, draft/tahan pesanan, voucher, checkout tunai, potong stok otomatis, struk 58/80mm, riwayat transaksi, pengaturan toko, manajemen voucher | Selesai |
 | 6 — Shift | Kas masuk/keluar, ringkasan shift, tutup shift dengan hitung selisih kas, laporan shift (layar & cetak) | Selesai |
@@ -57,7 +57,7 @@ Untuk menjalankan test juga perlu `pdo_sqlite` dan `sqlite3`.
 Kasir harus **membuka shift** (isi modal awal) sebelum bisa bertransaksi. Data contoh juga berisi
 voucher `NGOPIPAGI` (10%, maks Rp5.000, min. belanja Rp20.000).
 
-**Ganti password ini sebelum dipakai untuk operasional.** Seeder data contoh (menu, bahan, supplier)
+**Ganti password ini sebelum dipakai untuk operasional.** Seeder data contoh (menu, bahan)
 hanya berjalan jika `APP_ENV` bukan `production`.
 
 ## Pengembangan
@@ -81,7 +81,7 @@ php artisan test       # seluruh test (SQLite in-memory)
 - **Satuan bahan terkunci setelah dibuat**, karena takaran resep bergantung pada satuan itu.
 - **HPP dihitung langsung** dari resep × harga modal bahan saat ini (tidak disimpan sebagai cache
   yang bisa basi). Snapshot HPP disimpan per transaksi saat modul POS dibuat (Tahap 4).
-- **Produk, bahan, dan supplier di-soft-delete** agar riwayat transaksi dan mutasi stok tetap utuh.
+- **Produk dan bahan di-soft-delete** agar riwayat transaksi dan mutasi stok tetap utuh.
   Kategori yang pernah punya produk tidak bisa dihapus; nonaktifkan saja.
 - **Font di-host sendiri** (`@fontsource-variable/plus-jakarta-sans`) sehingga tampilan tetap benar
   walau internet kedai mati.

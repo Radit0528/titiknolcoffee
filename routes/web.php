@@ -17,7 +17,6 @@ use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\StaffController;
 use App\Http\Controllers\Owner\StockMovementController;
-use App\Http\Controllers\Owner\SupplierController;
 use App\Http\Controllers\Owner\VoucherController;
 use App\Http\Controllers\Shared\OrderController;
 use App\Services\ReportService;
@@ -47,7 +46,6 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::resource('products', ProductController::class)->except('show');
     Route::patch('products/{product}/toggle', [ProductController::class, 'toggle'])->name('products.toggle');
 
-    Route::resource('suppliers', SupplierController::class)->except('show');
     Route::resource('ingredients', IngredientController::class)->except('show');
 
     Route::get('recipes', [RecipeController::class, 'index'])->name('recipes.index');
