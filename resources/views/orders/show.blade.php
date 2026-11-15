@@ -45,6 +45,10 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
+                @if ($order->status === \App\Enums\OrderStatus::Pending && $order->payment?->payment_url)
+                    <x-ui.button :href="$order->payment->payment_url" variant="primary" target="_blank">Buka Pembayaran DOKU</x-ui.button>
+                    <x-ui.button :href="route('orders.show', $order)" variant="secondary">Cek Status Pembayaran</x-ui.button>
+                @endif
                 <x-ui.button :href="route('orders.print', ['order' => $order, 'width' => 58])" variant="secondary" icon="printer" target="_blank">Cetak 58mm</x-ui.button>
                 <x-ui.button :href="route('orders.print', ['order' => $order, 'width' => 80])" variant="secondary" icon="printer" target="_blank">Cetak 80mm</x-ui.button>
                 @if ($canVoid)

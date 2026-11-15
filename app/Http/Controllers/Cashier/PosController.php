@@ -12,6 +12,7 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Order;
 use App\Services\CheckoutService;
+use App\Services\DokuService;
 use App\Services\ProductService;
 use App\Services\SettingService;
 use Illuminate\Http\JsonResponse;
@@ -109,9 +110,30 @@ class PosController extends Controller
         ]);
     }
 
-    public function checkout(CheckoutRequest $request): JsonResponse
+    public function checkout(CheckoutRequest $request, DokuService $doku): JsonResponse
     {
+        $method = $request->input('method', 'cash');
+
         try {
+            if ($method === 'qris') {
+                $order = $this->checkout->checkoutQris(
+                    $request->user(),
+                    $request->attributes->get('shift'),
+                    $request->cart(),
+                    $doku,
+                );
+
+                return response()->json([
+                    'order' => $order->code,
+                    'order_id' => $order->id,
+                    'status' => $order->status->value,
+                    'payment_url' => $order->payment?->payment_url,
+                    'status_url' => route('cashier.pos.payment.status', $order),
+                    'cancel_url' => route('cashier.pos.payment.cancel', $order),
+                    'redirect' => $order->status === OrderStatus::Paid ? route('orders.show', $order) : null,
+                ]);
+            }
+
             $order = $this->checkout->checkoutCash($request->user(), $request->attributes->get('shift'), $request->cart());
         } catch (CheckoutException $e) {
             return response()->json(['message' => $e->getMessage(), 'field' => $e->field], 422);
@@ -120,6 +142,53 @@ class PosController extends Controller
         return response()->json([
             'order' => $order->code,
             'redirect' => route('orders.show', $order),
+        ]);
+    }
+
+    /**
+     * Poll payment status for a pending DOKU order.
+     */
+    public function paymentStatus(Request $request, Order $order, DokuService $doku): JsonResponse
+    {
+        abort_unless($order->user_id === $request->user()->id, 403);
+
+        if ($order->status === OrderStatus::Pending) {
+            $dokuStatus = $doku->checkStatus($order);
+
+            if ($dokuStatus === 'SUCCESS') {
+                $order = $this->checkout->confirmQrisPayment($order);
+            } elseif (in_array($dokuStatus, ['EXPIRED', 'FAILED'], true)) {
+                $order = $this->checkout->cancelQrisPayment($order);
+            }
+        }
+
+        return response()->json([
+            'order' => $order->code,
+            'status' => $order->status->value,
+            'paid' => $order->status === OrderStatus::Paid,
+            'expired' => $order->status === OrderStatus::Expired,
+            'redirect' => $order->status === OrderStatus::Paid ? route('orders.show', $order) : null,
+            'new_client_token' => $order->status === OrderStatus::Expired ? (string) Str::uuid() : null,
+        ]);
+    }
+
+    /**
+     * Cancel an unpaid DOKU order and return stock/voucher so the cashier can retry or change payment method.
+     */
+    public function cancelPayment(Request $request, Order $order): JsonResponse
+    {
+        abort_unless($order->user_id === $request->user()->id, 403);
+
+        try {
+            $order = $this->checkout->cancelQrisPayment($order);
+        } catch (CheckoutException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json([
+            'order' => $order->code,
+            'status' => $order->status->value,
+            'new_client_token' => (string) Str::uuid(),
         ]);
     }
 }

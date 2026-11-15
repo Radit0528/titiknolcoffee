@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'shift.open' => EnsureShiftIsOpen::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: [
+            'webhook/doku',
+        ]);
+
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn (Request $request) => route($request->user()->role->homeRoute()));
     })

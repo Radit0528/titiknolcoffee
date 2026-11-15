@@ -14,6 +14,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Shift;
+use App\Models\StockMutation;
 use App\Models\User;
 use App\Models\Voucher;
 use App\Support\Format;
@@ -206,6 +207,140 @@ class CheckoutService
     }
 
     /**
+     * Create a pending QRIS/DOKU order, reserve stock & voucher, and generate
+     * the DOKU Checkout payment link.
+     *
+     * @param  array{client_token: string, items: array, order_type: string, customer_name?: ?string, voucher_code?: ?string, draft_id?: ?int}  $data
+     *
+     * @throws CheckoutException
+     */
+    public function checkoutQris(User $user, Shift $shift, array $data, DokuService $doku): Order
+    {
+        try {
+            return DB::transaction(function () use ($user, $shift, $data, $doku) {
+                if ($existing = Order::with('payment')->where('client_token', $data['client_token'])->first()) {
+                    return $existing;
+                }
+
+                $priced = $this->price($data['items'], $data['voucher_code'] ?? null, lockVoucher: true);
+                $grandTotal = $priced['total'];
+
+                $order = Order::create([
+                    'client_token' => $data['client_token'],
+                    'shift_id' => $shift->id,
+                    'user_id' => $user->id,
+                    'status' => OrderStatus::Pending,
+                    'order_type' => OrderType::from($data['order_type']),
+                    'customer_name' => filled($data['customer_name'] ?? null) ? trim($data['customer_name']) : null,
+                    'voucher_id' => $priced['voucher']?->id,
+                    'voucher_code' => $priced['voucher']?->code,
+                    'subtotal' => $priced['subtotal'],
+                    'discount' => $priced['discount'],
+                    'service_charge' => $priced['service_charge'],
+                    'tax' => $priced['tax'],
+                    'total' => $priced['total'],
+                    'rounding' => 0,
+                    'grand_total' => $grandTotal,
+                    'service_charge_rate' => $priced['service_rate'],
+                    'tax_rate' => $priced['tax_rate'],
+                    'paid_at' => null,
+                ]);
+
+                $order->forceFill(['code' => $this->orderCode($order)])->save();
+
+                $this->writeItems($order, $priced['lines'], withHpp: true);
+
+                if ($priced['voucher']) {
+                    $this->vouchers->redeem($priced['voucher'], $order, $priced['discount']);
+                }
+
+                $this->deductStock($order, $priced['lines']);
+
+                $gateway = $doku->createCheckout($order);
+
+                Payment::create([
+                    'order_id' => $order->id,
+                    'method' => PaymentMethod::Qris,
+                    'status' => PaymentStatus::Pending,
+                    'gateway_reference' => $gateway['reference'],
+                    'amount' => $grandTotal,
+                    'payment_url' => $gateway['payment_url'],
+                    'expires_at' => $gateway['expires_at'],
+                ]);
+
+                if (! empty($data['draft_id'])) {
+                    Order::whereKey($data['draft_id'])
+                        ->where('user_id', $user->id)
+                        ->where('status', OrderStatus::Draft)
+                        ->delete();
+                }
+
+                return $order->load('payment');
+            });
+        } catch (UniqueConstraintViolationException $e) {
+            return Order::with('payment')->where('client_token', $data['client_token'])->first() ?? throw $e;
+        }
+    }
+
+    /**
+     * Mark a pending QRIS/DOKU order as Paid once confirmed by DOKU.
+     */
+    public function confirmQrisPayment(Order $order): Order
+    {
+        return DB::transaction(function () use ($order) {
+            $locked = Order::with('payment')->whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === OrderStatus::Paid) {
+                return $locked;
+            }
+
+            if ($locked->status !== OrderStatus::Pending) {
+                throw new CheckoutException('Status pesanan sudah tidak menunggu pembayaran.', 'method');
+            }
+
+            $now = now();
+
+            $locked->update([
+                'status' => OrderStatus::Paid,
+                'paid_at' => $now,
+            ]);
+
+            $locked->payment?->update([
+                'status' => PaymentStatus::Paid,
+                'paid_at' => $now,
+            ]);
+
+            return $locked->fresh(['payment']);
+        });
+    }
+
+    /**
+     * Cancel/expire an unpaid pending QRIS order and return its reserved stock & voucher.
+     */
+    public function cancelQrisPayment(Order $order): Order
+    {
+        return DB::transaction(function () use ($order) {
+            $locked = Order::with('payment')->whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->status === OrderStatus::Expired) {
+                return $locked;
+            }
+
+            if ($locked->status !== OrderStatus::Pending) {
+                throw new CheckoutException('Hanya pesanan yang masih menunggu pembayaran yang dapat dibatalkan.', 'method');
+            }
+
+            $this->returnReservedStock($locked);
+            $this->releaseReservedVoucher($locked);
+
+            $locked->update(['status' => OrderStatus::Expired]);
+            $locked->payment?->update(['status' => PaymentStatus::Expired]);
+
+            return $locked->fresh(['payment']);
+        });
+    }
+
+    /**
      * Hold a cart as a draft. Drafts never touch stock or voucher quota.
      *
      * @param  array{items: array, order_type: string, customer_name?: ?string, voucher_code?: ?string}  $data
@@ -312,6 +447,47 @@ class CheckoutService
                     implode(', ', array_keys($usedBy[$ingredientId])),
                 ), 'items');
             }
+        }
+    }
+
+    private function returnReservedStock(Order $order): void
+    {
+        $sold = StockMutation::query()
+            ->where('reference_type', $order->getMorphClass())
+            ->where('reference_id', $order->id)
+            ->where('type', StockMutationType::Sale)
+            ->orderBy('ingredient_id')
+            ->get();
+
+        foreach ($sold->groupBy('ingredient_id') as $ingredientId => $rows) {
+            $quantity = round(-$rows->sum(fn ($m) => (float) $m->quantity), 3);
+
+            if ($quantity <= 0) {
+                continue;
+            }
+
+            $this->inventory->applyMutation(
+                Ingredient::withTrashed()->findOrFail($ingredientId),
+                StockMutationType::VoidReturn,
+                $quantity,
+                'Batal pembayaran '.$order->code,
+                $order,
+                (float) $rows->first()->cost_per_unit,
+            );
+        }
+    }
+
+    private function releaseReservedVoucher(Order $order): void
+    {
+        if (! $order->voucher_id) {
+            return;
+        }
+
+        $voucher = Voucher::whereKey($order->voucher_id)->lockForUpdate()->first();
+        $deleted = $voucher?->usages()->where('order_id', $order->id)->delete();
+
+        if ($deleted && $voucher->used_count > 0) {
+            $voucher->decrement('used_count');
         }
     }
 

@@ -1,6 +1,6 @@
-// JSON POST with Laravel's CSRF token. Never throws on HTTP errors:
+// JSON POST & GET with Laravel's CSRF token. Never throws on HTTP errors:
 // returns { ok, status, data } so callers can show the server's message.
-export async function postJson(url, payload) {
+export async function postJson(url, payload = {}) {
     const token = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
     try {
         const response = await fetch(url, {
@@ -13,6 +13,23 @@ export async function postJson(url, payload) {
             },
             credentials: 'same-origin',
             body: JSON.stringify(payload),
+        });
+        const data = await response.json().catch(() => ({}));
+        return { ok: response.ok, status: response.status, data };
+    } catch {
+        return { ok: false, status: 0, data: { message: 'Koneksi ke server terputus. Coba lagi.' } };
+    }
+}
+
+export async function getJson(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin',
         });
         const data = await response.json().catch(() => ({}));
         return { ok: response.ok, status: response.status, data };

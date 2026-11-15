@@ -4,12 +4,15 @@ namespace Tests\Feature\Cashier;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use App\Enums\StockMutationType;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\StockMutation;
+use App\Services\DokuService;
 use App\Services\RecipeService;
 use App\Services\SettingService;
+use Illuminate\Support\Facades\Http;
 
 class CheckoutTest extends PosTestCase
 {
@@ -198,5 +201,120 @@ class CheckoutTest extends PosTestCase
         $this->actingAs($this->cashier)->get('/kasir')
             ->assertOk()
             ->assertViewHas('catalog', fn ($catalog) => $catalog->firstWhere('id', $this->kopi->id)['servings'] === 3);
+    }
+
+    public function test_qris_doku_checkout_status_polling_and_webhook(): void
+    {
+        config([
+            'services.doku.client_id' => 'BRN-TEST',
+            'services.doku.secret_key' => 'SK-TEST',
+            'services.doku.base_url' => 'https://api.doku.com',
+        ]);
+
+        Http::fake([
+            'https://api.doku.com/checkout/v1/payment' => Http::response([
+                'message' => ['SUCCESS'],
+                'response' => [
+                    'payment' => [
+                        'url' => 'https://checkout.doku.com/checkout-link-v2/tok-123',
+                        'token_id' => 'tok-123',
+                    ],
+                ],
+            ], 200),
+            'https://api.doku.com/orders/v1/status/*' => Http::response([
+                'order' => ['status' => 'SUCCESS'],
+                'transaction' => ['status' => 'SUCCESS'],
+            ], 200),
+        ]);
+
+        $payload = $this->cart(2, ['method' => 'qris', 'cash_received' => null]);
+        $response = $this->checkout($payload)->assertOk();
+
+        $order = Order::sole();
+        $this->assertSame(OrderStatus::Pending, $order->status);
+        $this->assertSame(PaymentMethod::Qris, $order->payment->method);
+        $this->assertSame(PaymentStatus::Pending, $order->payment->status);
+        $this->assertSame('https://checkout.doku.com/checkout-link-v2/tok-123', $order->payment->payment_url);
+        $this->assertSame('964.000', $this->ing['beans']->fresh()->stock);
+
+        // Poll status -> confirms payment
+        $this->actingAs($this->cashier)
+            ->getJson($response->json('status_url'))
+            ->assertOk()
+            ->assertJson(['paid' => true, 'redirect' => route('orders.show', $order)]);
+
+        $this->assertSame(OrderStatus::Paid, $order->fresh()->status);
+        $this->assertSame(PaymentStatus::Paid, $order->fresh()->payment->status);
+    }
+
+    public function test_cancelling_pending_qris_order_returns_stock(): void
+    {
+        config([
+            'services.doku.client_id' => 'BRN-TEST',
+            'services.doku.secret_key' => 'SK-TEST',
+            'services.doku.base_url' => 'https://api.doku.com',
+        ]);
+
+        Http::fake([
+            'https://api.doku.com/checkout/v1/payment' => Http::response([
+                'response' => [
+                    'payment' => [
+                        'url' => 'https://checkout.doku.com/checkout-link-v2/tok-456',
+                        'token_id' => 'tok-456',
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $response = $this->checkout($this->cart(2, ['method' => 'qris', 'cash_received' => null]))->assertOk();
+        $this->assertSame('964.000', $this->ing['beans']->fresh()->stock);
+
+        $this->actingAs($this->cashier)
+            ->postJson($response->json('cancel_url'))
+            ->assertOk()
+            ->assertJson(['status' => OrderStatus::Expired->value]);
+
+        $this->assertSame('1000.000', $this->ing['beans']->fresh()->stock);
+    }
+
+    public function test_doku_webhook_confirms_pending_order(): void
+    {
+        config([
+            'services.doku.client_id' => 'BRN-TEST',
+            'services.doku.secret_key' => 'SK-TEST',
+            'services.doku.base_url' => 'https://api.doku.com',
+        ]);
+
+        Http::fake([
+            'https://api.doku.com/checkout/v1/payment' => Http::response([
+                'response' => [
+                    'payment' => [
+                        'url' => 'https://checkout.doku.com/checkout-link-v2/tok-789',
+                        'token_id' => 'tok-789',
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $this->checkout($this->cart(1, ['method' => 'qris', 'cash_received' => null]))->assertOk();
+        $order = Order::sole();
+
+        $body = json_encode([
+            'order' => ['invoice_number' => $order->code],
+            'transaction' => ['status' => 'SUCCESS'],
+        ]);
+        $reqId = 'req-123';
+        $ts = '2026-11-15T07:00:00Z';
+        $sig = app(DokuService::class)->generatePostSignature('/webhook/doku', $reqId, $ts, $body);
+
+        $this->call('POST', '/webhook/doku', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_CLIENT_ID' => 'BRN-TEST',
+            'HTTP_REQUEST_ID' => $reqId,
+            'HTTP_REQUEST_TIMESTAMP' => $ts,
+            'HTTP_SIGNATURE' => $sig,
+        ], $body)->assertOk();
+
+        $this->assertSame(OrderStatus::Paid, $order->fresh()->status);
     }
 }

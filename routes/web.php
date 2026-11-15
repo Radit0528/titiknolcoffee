@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Cashier\DraftController;
 use App\Http\Controllers\Cashier\PosController;
 use App\Http\Controllers\Cashier\ShiftController;
+use App\Http\Controllers\DokuWebhookController;
 use App\Http\Controllers\Owner\AccountController;
 use App\Http\Controllers\Owner\AuditLogController;
 use App\Http\Controllers\Owner\BannerController;
@@ -94,6 +95,8 @@ Route::middleware(['auth', 'role:cashier'])->prefix('kasir')->name('cashier.')->
         Route::get('/', [PosController::class, 'index'])->name('pos');
         Route::post('quote', [PosController::class, 'quote'])->name('pos.quote');
         Route::post('checkout', [PosController::class, 'checkout'])->name('pos.checkout')->middleware('throttle:60,1');
+        Route::get('pembayaran/{order}/status', [PosController::class, 'paymentStatus'])->name('pos.payment.status');
+        Route::post('pembayaran/{order}/batal', [PosController::class, 'cancelPayment'])->name('pos.payment.cancel');
 
         // Tahap 6 — kas masuk/keluar & tutup shift
         Route::get('shift', [ShiftController::class, 'current'])->name('shift.current');
@@ -119,3 +122,6 @@ Route::middleware(['auth', 'role:owner,cashier'])->prefix('shift')->name('shifts
     Route::get('{shift}', [ShiftController::class, 'show'])->name('show');
     Route::get('{shift}/cetak', [ShiftController::class, 'print'])->name('print');
 });
+
+// Webhook notifikasi pembayaran DOKU.
+Route::post('/webhook/doku', DokuWebhookController::class)->name('webhook.doku');

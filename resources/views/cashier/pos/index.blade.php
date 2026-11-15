@@ -161,14 +161,19 @@
         </button>
         <div class="sidebar-overlay !z-30" x-show="cartOpen" x-cloak x-transition.opacity x-on:click="cartOpen = false"></div>
 
-        {{-- Cash payment --}}
+        {{-- Payment modal (Tunai & DOKU) --}}
         <template x-teleport="body">
             <div x-show="checkoutOpen" x-cloak>
                 <div class="modal-backdrop" x-on:click="closeCheckout" x-transition.opacity></div>
                 <div class="pay-panel" role="dialog" aria-modal="true" aria-labelledby="pay-title" x-transition>
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 id="pay-title" class="text-lg font-bold">Pembayaran Tunai</h2>
-                        <button type="button" class="btn btn-ghost btn-sm btn-icon" x-on:click="closeCheckout" aria-label="Tutup"><x-ui.icon name="x" /></button>
+                        <h2 id="pay-title" class="text-lg font-bold" x-text="paymentMethod === 'cash' ? 'Pembayaran Tunai' : 'Pembayaran Non-Tunai (DOKU)'"></h2>
+                        <button type="button" class="btn btn-ghost btn-sm btn-icon" x-on:click="closeCheckout" x-bind:disabled="busy || !!pendingOrder" aria-label="Tutup"><x-ui.icon name="x" /></button>
+                    </div>
+
+                    <div class="segmented mb-4" role="group" aria-label="Metode pembayaran">
+                        <button type="button" x-on:click="setMethod('cash')" x-bind:aria-pressed="paymentMethod === 'cash'" x-bind:disabled="busy || !!pendingOrder">Tunai</button>
+                        <button type="button" x-on:click="setMethod('qris')" x-bind:aria-pressed="paymentMethod === 'qris'" x-bind:disabled="busy || !!pendingOrder">QRIS / DOKU</button>
                     </div>
 
                     <dl class="totals mb-4">
@@ -181,10 +186,11 @@
 
                     <div class="pay-total mb-4 flex items-center justify-between">
                         <span class="text-sm text-coffee-300">Total bayar</span>
-                        <span class="text-2xl font-bold tabular-nums" x-text="money(cashTotal)"></span>
+                        <span class="text-2xl font-bold tabular-nums" x-text="money(payableTotal)"></span>
                     </div>
 
-                    <div class="flex flex-col gap-3">
+                    {{-- Tunai --}}
+                    <div class="flex flex-col gap-3" x-show="paymentMethod === 'cash'">
                         <label for="cash" class="label">Uang diterima</label>
                         <div class="input-group">
                             <span class="input-addon">Rp</span>
@@ -209,7 +215,48 @@
                             <span x-show="!busy">Selesaikan pembayaran</span>
                             <span x-show="busy" x-cloak>Memproses…</span>
                         </x-ui.button>
-                        <p class="hint text-center">Pembayaran QRIS ditambahkan di tahap akhir.</p>
+                    </div>
+
+                    {{-- QRIS / DOKU --}}
+                    <div class="flex flex-col gap-3" x-show="paymentMethod === 'qris'" x-cloak>
+                        <div class="rounded-xl border border-line px-4 py-3" x-show="!pendingOrder">
+                            <p class="text-sm font-semibold">Gateway Pembayaran DOKU</p>
+                            <p class="mt-0.5 text-xs text-muted">Membuat tagihan otomatis melalui DOKU Checkout (QRIS, Virtual Account, atau E-Wallet) sesuai nominal pas tanpa pembulatan tunai.</p>
+                        </div>
+
+                        <div class="flex flex-col gap-3 rounded-xl border border-line px-4 py-3" x-show="pendingOrder" x-cloak>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold text-muted uppercase">No. Pesanan</span>
+                                <span class="text-sm font-bold tabular-nums" x-text="pendingOrder?.order"></span>
+                            </div>
+                            <div class="flex items-center gap-2 text-sm text-warning font-semibold">
+                                <x-ui.icon name="clock" class="size-4 shrink-0" />
+                                <span>Menunggu pelanggan menyelesaikan pembayaran…</span>
+                            </div>
+                            <p class="text-xs text-muted">Halaman struk akan terbuka otomatis begitu pembayaran DOKU terkonfirmasi.</p>
+                        </div>
+
+                        <p class="field-error" x-show="error" x-text="error"></p>
+
+                        <x-ui.button type="button" variant="primary" class="h-12 text-base" x-show="!pendingOrder" x-on:click="pay" x-bind:disabled="!canPay">
+                            <span x-show="!busy">Bayar via DOKU</span>
+                            <span x-show="busy" x-cloak>Menghubungi DOKU…</span>
+                        </x-ui.button>
+
+                        <div class="flex flex-col gap-2" x-show="pendingOrder" x-cloak>
+                            <a x-bind:href="pendingOrder?.payment_url" target="_blank" rel="noopener" class="btn btn-primary h-11 text-sm justify-center">
+                                Buka Halaman Pembayaran DOKU
+                            </a>
+                            <div class="grid grid-cols-2 gap-2">
+                                <x-ui.button type="button" variant="secondary" x-on:click="checkPaymentStatus(true)" x-bind:disabled="checkingStatus || busy">
+                                    <span x-show="!checkingStatus">Cek Status</span>
+                                    <span x-show="checkingStatus" x-cloak>Mengecek…</span>
+                                </x-ui.button>
+                                <x-ui.button type="button" variant="secondary" class="hover:text-danger" x-on:click="cancelPendingPayment" x-bind:disabled="busy">
+                                    Batalkan
+                                </x-ui.button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

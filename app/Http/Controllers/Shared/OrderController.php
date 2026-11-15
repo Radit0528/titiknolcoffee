@@ -7,6 +7,8 @@ use App\Exceptions\CheckoutException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Shared\VoidRequest;
 use App\Models\Order;
+use App\Services\CheckoutService;
+use App\Services\DokuService;
 use App\Services\OwnerPinService;
 use App\Services\SettingService;
 use App\Services\VoidService;
@@ -25,6 +27,8 @@ class OrderController extends Controller
         private SettingService $settings,
         private OwnerPinService $pins,
         private VoidService $voids,
+        private CheckoutService $checkout,
+        private DokuService $doku,
     ) {}
 
     public function index(Request $request): View
@@ -54,6 +58,16 @@ class OrderController extends Controller
     public function show(Request $request, Order $order): View
     {
         $this->authorizeView($request, $order);
+
+        if ($order->status === OrderStatus::Pending) {
+            $dokuStatus = $this->doku->checkStatus($order);
+
+            if ($dokuStatus === 'SUCCESS') {
+                $order = $this->checkout->confirmQrisPayment($order);
+            } elseif (in_array($dokuStatus, ['EXPIRED', 'FAILED'], true)) {
+                $order = $this->checkout->cancelQrisPayment($order);
+            }
+        }
 
         return view('orders.show', [
             'order' => $order->load(['items', 'user', 'payment', 'shift', 'voidRecord.requester', 'voidRecord.approver']),

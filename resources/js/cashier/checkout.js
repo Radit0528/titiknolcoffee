@@ -1,6 +1,7 @@
-// Voucher, totals and cash payment. Mirrors CheckoutService::price() so the
-// cashier sees the right numbers; the server recomputes and has the final say.
-import { postJson, errorMessage } from '../components/http';
+// Voucher, totals, cash payment and DOKU (QRIS/Payment Gateway) payment.
+// Mirrors CheckoutService::price() so the cashier sees the right numbers;
+// the server recomputes and has the final say.
+import { postJson, getJson, errorMessage } from '../components/http';
 
 export default function checkout(config) {
     return {
@@ -9,7 +10,10 @@ export default function checkout(config) {
         voucherDiscount: 0,
         voucherError: '',
         checkoutOpen: false,
+        paymentMethod: 'cash',  // 'cash' | 'qris'
         cashReceived: '',
+        pendingOrder: null,     // { order, payment_url, status_url, cancel_url }
+        checkingStatus: false,
         busy: false,
         error: '',
 
@@ -26,11 +30,15 @@ export default function checkout(config) {
             return this.subtotal - this.discount + this.serviceCharge + this.tax;
         },
         get rounding() {
+            if (this.paymentMethod !== 'cash') return 0;
             const unit = config.cashRounding;
             return unit > 0 ? Math.round(this.total / unit) * unit - this.total : 0;
         },
         get cashTotal() {
             return this.total + this.rounding;
+        },
+        get payableTotal() {
+            return this.paymentMethod === 'cash' ? this.cashTotal : this.total;
         },
         get cashValue() {
             return parseInt(this.cashReceived, 10) || 0;
@@ -39,7 +47,9 @@ export default function checkout(config) {
             return this.cashValue - this.cashTotal;
         },
         get canPay() {
-            return this.lines.length > 0 && this.cashValue >= this.cashTotal && !this.busy;
+            if (this.lines.length === 0 || this.busy) return false;
+            if (this.paymentMethod === 'qris') return !this.pendingOrder;
+            return this.cashValue >= this.cashTotal;
         },
         // Quick cash buttons: exact amount plus common notes above the total.
         get quickCash() {
@@ -85,15 +95,26 @@ export default function checkout(config) {
             }, 300);
         },
 
+        setMethod(method) {
+            if (this.busy || this.pendingOrder) return;
+            this.paymentMethod = method;
+            this.error = '';
+            if (method === 'cash') {
+                this.$nextTick(() => this.$refs.cash?.focus());
+            }
+        },
         openCheckout() {
             if (!this.lines.length) return;
             this.error = '';
             this.cashReceived = '';
             this.checkoutOpen = true;
-            this.$nextTick(() => this.$refs.cash?.focus());
+            if (this.paymentMethod === 'cash') {
+                this.$nextTick(() => this.$refs.cash?.focus());
+            }
         },
         closeCheckout() {
-            if (!this.busy) this.checkoutOpen = false;
+            if (this.busy || this.pendingOrder) return;
+            this.checkoutOpen = false;
         },
         setCash(amount) {
             this.cashReceived = String(amount);
@@ -103,18 +124,113 @@ export default function checkout(config) {
             if (!this.canPay) return;
             this.busy = true;
             this.error = '';
-            const { ok, data } = await postJson(config.urls.checkout, {
+
+            const body = {
                 ...this.payload(),
                 client_token: config.clientToken,
-                cash_received: this.cashValue,
+                method: this.paymentMethod,
                 draft_id: this.draftId,
-            });
-            if (ok && data.redirect) {
+            };
+
+            if (this.paymentMethod === 'cash') {
+                body.cash_received = this.cashValue;
+            }
+
+            const { ok, data } = await postJson(config.urls.checkout, body);
+
+            if (!ok) {
+                this.busy = false;
+                this.error = errorMessage(data, 'Pembayaran gagal diproses.');
+                return;
+            }
+
+            if (data.redirect) {
                 window.location.assign(data.redirect);
                 return; // keep the button disabled while the receipt loads
             }
+
+            if (this.paymentMethod === 'qris' && data.payment_url) {
+                this.busy = false;
+                this.pendingOrder = {
+                    order: data.order,
+                    payment_url: data.payment_url,
+                    status_url: data.status_url,
+                    cancel_url: data.cancel_url,
+                };
+                window.open(data.payment_url, '_blank', 'noopener');
+                this.startStatusPolling();
+                return;
+            }
+
             this.busy = false;
-            this.error = errorMessage(data, 'Pembayaran gagal diproses.');
+            this.error = 'Respons pembayaran tidak valid.';
+        },
+
+        startStatusPolling() {
+            this.stopStatusPolling();
+            this._pollTimer = setInterval(() => {
+                this.checkPaymentStatus(false);
+            }, 4000);
+        },
+
+        stopStatusPolling() {
+            if (this._pollTimer) {
+                clearInterval(this._pollTimer);
+                this._pollTimer = null;
+            }
+        },
+
+        async checkPaymentStatus(manual = false) {
+            if (!this.pendingOrder || this.checkingStatus) return;
+            this.checkingStatus = true;
+            if (manual) this.error = '';
+
+            const { ok, data } = await getJson(this.pendingOrder.status_url);
+            this.checkingStatus = false;
+
+            if (!ok) {
+                if (manual) this.error = errorMessage(data, 'Gagal memeriksa status pembayaran.');
+                return;
+            }
+
+            if (data.paid && data.redirect) {
+                this.stopStatusPolling();
+                window.location.assign(data.redirect);
+                return;
+            }
+
+            if (data.expired) {
+                this.stopStatusPolling();
+                if (data.new_client_token) config.clientToken = data.new_client_token;
+                this.pendingOrder = null;
+                this.error = 'Pembayaran DOKU telah kedaluwarsa atau gagal. Silakan coba lagi.';
+                return;
+            }
+
+            if (manual) {
+                this.error = 'Pembayaran masih menunggu diselesaikan oleh pelanggan.';
+            }
+        },
+
+        async cancelPendingPayment() {
+            if (!this.pendingOrder || this.busy) return;
+            this.busy = true;
+            this.error = '';
+            this.stopStatusPolling();
+
+            const { ok, data } = await postJson(this.pendingOrder.cancel_url);
+            this.busy = false;
+
+            if (!ok) {
+                this.error = errorMessage(data, 'Gagal membatalkan pembayaran.');
+                this.startStatusPolling();
+                return;
+            }
+
+            if (data.new_client_token) {
+                config.clientToken = data.new_client_token;
+            }
+            this.pendingOrder = null;
         },
 
         async saveDraft() {

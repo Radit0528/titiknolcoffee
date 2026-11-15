@@ -13,13 +13,23 @@ class CheckoutRequest extends CartRequest
     {
         return parent::rules() + [
             'client_token' => ['required', 'uuid'],
-            'cash_received' => ['required', 'numeric', 'min:0', 'max:999999999'],
+            'method' => ['nullable', Rule::in(['cash', 'qris'])],
+            'cash_received' => [
+                Rule::requiredIf(fn () => $this->input('method', 'cash') === 'cash'),
+                'nullable',
+                'numeric',
+                'min:0',
+                'max:999999999',
+            ],
             'draft_id' => ['nullable', 'integer', Rule::exists('orders', 'id')],
         ];
     }
 
     public function attributes(): array
     {
-        return parent::attributes() + ['cash_received' => 'uang diterima'];
+        return parent::attributes() + [
+            'method' => 'metode pembayaran',
+            'cash_received' => 'uang diterima',
+        ];
     }
 }
