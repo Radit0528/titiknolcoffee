@@ -3,8 +3,8 @@
 @section('body')
     <header class="topbar">
         <a href="{{ route('cashier.pos') }}" class="flex items-center gap-3">
-            <x-brand-mark />
-            <div class="leading-tight">
+            <x-brand-logo class="h-9 w-auto" />
+            <div class="border-l border-line pl-3 leading-tight">
                 <p class="text-sm font-bold tracking-wide">SIMKOTOL</p>
                 <p class="text-[0.7rem] text-muted">Kasir</p>
             </div>

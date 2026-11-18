@@ -11,10 +11,11 @@
                 <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-2.5">
                     @if ($logoUrl)
                         <img src="{{ $logoUrl }}" alt="" class="size-9 rounded-lg object-contain">
+                        <span class="truncate font-bold">{{ $settings['store_name'] }}</span>
                     @else
-                        <x-brand-mark class="size-9" />
+                        <x-brand-logo class="h-10 w-auto sm:h-11" />
+                        <span class="sr-only">{{ $settings['store_name'] }}</span>
                     @endif
-                    <span class="truncate font-bold">{{ $settings['store_name'] }}</span>
                 </a>
                 <nav class="ml-auto flex items-center gap-1 text-sm">
                     <a href="#menu" class="public-nav-link hidden sm:inline-flex">Menu</a>

@@ -79,6 +79,17 @@ class HomePageTest extends TestCase
         $this->get('/login')->assertOk()->assertSee('Lihat menu kedai');
     }
 
+    public function test_titik_nol_logo_is_shown(): void
+    {
+        $this->assertFileExists(public_path('images/logo-titiknol.png'));
+        $this->assertFileExists(public_path('images/logo-titiknol-light.png'));
+
+        $this->get('/')->assertOk()->assertSee('images/logo-titiknol.png', false)->assertSee('alt="Titik Nol Coffee"', false);
+        // Dark side panel uses the white-text version; the light card the black one.
+        $this->get('/login')->assertOk()->assertSee('images/logo-titiknol-light.png', false)->assertSee('images/logo-titiknol.png', false);
+        $this->actingAs($this->owner())->get('/owner')->assertOk()->assertSee('images/logo-titiknol-light.png', false);
+    }
+
     public function test_owner_saves_hours_and_maps_link(): void
     {
         $owner = $this->owner();

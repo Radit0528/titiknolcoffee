@@ -1,10 +1,10 @@
 {{-- Only modules that already have a working backend are listed. --}}
 <aside class="sidebar" x-data x-bind:data-open="$store.sidebar.open">
     <div class="sidebar-brand">
-        <x-brand-mark />
-        <div class="leading-tight">
+        <x-brand-logo variant="light" class="h-9 w-auto" />
+        <div class="border-l border-white/15 pl-3 leading-tight">
             <p class="text-sm font-bold tracking-wide text-white">SIMKOTOL</p>
-            <p class="text-[0.7rem] text-coffee-300">Kopi Titik Nol</p>
+            <p class="text-[0.7rem] text-coffee-300">Owner</p>
         </div>
         <button type="button" class="ml-auto text-coffee-300 hover:text-white lg:hidden" x-on:click="$store.sidebar.close()" aria-label="Tutup menu">
             <x-ui.icon name="x" class="size-5" />

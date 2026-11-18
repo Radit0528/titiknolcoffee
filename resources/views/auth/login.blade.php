@@ -5,9 +5,9 @@
 @section('body')
     <div class="login-shell">
         <aside class="login-aside">
-            <div class="flex items-center gap-3">
-                <x-brand-mark class="size-10" />
-                <div class="leading-tight">
+            <div class="flex items-center gap-4">
+                <x-brand-logo variant="light" class="h-14 w-auto" />
+                <div class="border-l border-white/15 pl-4 leading-tight">
                     <p class="font-bold tracking-wide text-white">SIMKOTOL</p>
                     <p class="text-xs text-coffee-300">Sistem Manajemen Kopi Titik Nol</p>
                 </div>
@@ -24,8 +24,8 @@
         <section class="login-panel">
             <div class="login-card">
                 <div class="mb-8 flex items-center gap-3 lg:hidden">
-                    <x-brand-mark class="size-10" />
-                    <p class="font-bold tracking-wide">SIMKOTOL</p>
+                    <x-brand-logo class="h-11 w-auto" />
+                    <p class="border-l border-line pl-3 font-bold tracking-wide">SIMKOTOL</p>
                 </div>
 
                 <h1 class="text-2xl font-bold tracking-tight">Masuk</h1>
