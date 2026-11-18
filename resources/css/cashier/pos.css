@@ -10,7 +10,7 @@
         @apply -mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0;
     }
     .category-tab {
-        @apply h-9 shrink-0 rounded-full border border-line bg-surface px-4 text-sm font-medium text-muted transition-colors hover:text-ink;
+        @apply inline-flex h-9 shrink-0 items-center rounded-full border border-line bg-surface px-4 text-sm leading-none font-medium text-muted transition-colors hover:text-ink;
     }
     .category-tab[aria-pressed='true'] {
         @apply border-coffee-900 bg-coffee-900 text-white;

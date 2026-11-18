@@ -52,6 +52,16 @@ import {
     History,
     Ban,
     Lock,
+    MapPin,
+    Phone,
+    LogIn,
+    ArrowRight,
+    Video,
+    Play,
+    Volume2,
+    VolumeX,
+    Maximize2,
+    Pause,
 } from 'lucide';
 
 const icons = {
@@ -105,6 +115,16 @@ const icons = {
     History,
     Ban,
     Lock,
+    MapPin,
+    Phone,
+    LogIn,
+    ArrowRight,
+    Video,
+    Play,
+    Volume2,
+    VolumeX,
+    Maximize2,
+    Pause,
 };
 
 // inTemplates also converts icons inside <template> (Alpine x-for / x-teleport),

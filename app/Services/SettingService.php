@@ -20,6 +20,8 @@ class SettingService
         'store_name' => 'Kopi Titik Nol',
         'store_address' => '',
         'store_phone' => '',
+        'store_hours' => '',
+        'store_maps_url' => '',
         'store_logo' => null,
         'receipt_footer' => 'Terima kasih, sampai jumpa lagi!',
         'receipt_width' => 58,

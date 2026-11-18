@@ -29,3 +29,22 @@
         @apply flex items-start gap-4 rounded-xl border border-danger/30 bg-danger-soft p-5 text-danger;
     }
 }
+
+@layer components {
+    /* Promo videos (portrait 9:16): list cards and upload preview */
+    .video-admin-grid {
+        @apply grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5;
+    }
+    .video-admin-frame {
+        @apply grid aspect-[9/16] w-full place-items-center overflow-hidden bg-coffee-50 text-coffee-300;
+    }
+    .video-admin-frame video {
+        @apply size-full bg-black object-cover;
+    }
+    .video-upload-frame {
+        @apply mx-auto grid aspect-[9/16] w-full max-w-48 place-items-center overflow-hidden rounded-lg border border-dashed border-line bg-coffee-50 text-coffee-300;
+    }
+    .video-upload-frame video {
+        @apply size-full bg-black object-cover;
+    }
+}

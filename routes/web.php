@@ -11,6 +11,7 @@ use App\Http\Controllers\Owner\BannerController;
 use App\Http\Controllers\Owner\CategoryController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\IngredientController;
+use App\Http\Controllers\Owner\MenuVideoController;
 use App\Http\Controllers\Owner\ProductController;
 use App\Http\Controllers\Owner\PurchaseController;
 use App\Http\Controllers\Owner\RecipeController;
@@ -19,11 +20,13 @@ use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\StaffController;
 use App\Http\Controllers\Owner\StockMovementController;
 use App\Http\Controllers\Owner\VoucherController;
+use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Shared\OrderController;
 use App\Services\ReportService;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login');
+// Halaman pelanggan (publik): banner promo, menu + video, dan info kedai.
+Route::get('/', HomeController::class)->name('home');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -84,6 +87,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::put('akun/password', [AccountController::class, 'updatePassword'])->name('account.password');
     Route::put('akun/pin', [AccountController::class, 'updatePin'])->name('account.pin');
     Route::resource('banners', BannerController::class)->except('show');
+    Route::resource('videos', MenuVideoController::class)->except('show');
     Route::get('audit-log', [AuditLogController::class, 'index'])->name('audit.index');
 });
 

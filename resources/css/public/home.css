@@ -1,0 +1,141 @@
+@layer components {
+    /* Public landing page for customers (route "home"). */
+    .public-container {
+        @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    }
+    .public-header {
+        @apply sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur;
+    }
+    .public-nav-link {
+        @apply rounded-lg px-3 py-2 font-medium text-muted hover:text-ink;
+    }
+    .public-hero {
+        @apply bg-coffee-900 py-14 text-white sm:py-20;
+    }
+    .public-hero-title {
+        @apply mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl;
+    }
+    .public-chip {
+        @apply inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-sm text-coffee-100;
+    }
+    .public-chip svg {
+        @apply size-4;
+    }
+    .public-section-title {
+        @apply mb-4 text-2xl font-bold;
+    }
+    .public-category-nav {
+        @apply sticky top-16 z-20 -mx-4 flex gap-2 overflow-x-auto bg-canvas/95 px-4 py-3 backdrop-blur sm:mx-0 sm:px-0;
+    }
+    .public-menu-grid {
+        @apply grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4;
+    }
+    .public-menu-card {
+        @apply flex flex-col overflow-hidden rounded-xl border border-line bg-surface;
+    }
+    .public-menu-card.is-sold-out {
+        @apply opacity-60;
+    }
+    .public-menu-media {
+        @apply relative grid aspect-square place-items-center bg-coffee-50 text-coffee-300;
+    }
+    .public-menu-media img {
+        @apply size-full object-cover;
+    }
+    .public-menu-media svg {
+        @apply size-10;
+    }
+    .public-sold-out {
+        @apply absolute top-2 left-2 rounded-full bg-ink px-2.5 py-1 text-xs font-bold text-white;
+    }
+    .public-info {
+        @apply flex items-start gap-2 text-sm;
+    }
+    .public-info svg {
+        @apply mt-0.5 size-4 shrink-0 text-coffee-500;
+    }
+}
+
+@layer components {
+    .public-hero-cta {
+        @apply bg-amber-500 text-ink hover:bg-amber-400;
+    }
+}
+
+@layer components {
+    /* Autoplaying promo videos (portrait 9:16), swipe sideways */
+    .video-strip {
+        @apply -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:scroll-px-0 sm:px-0;
+        scrollbar-width: thin;
+    }
+    .video-card {
+        @apply relative aspect-[9/16] w-[42vw] max-w-56 shrink-0 snap-start overflow-hidden rounded-2xl bg-coffee-900 sm:w-52;
+    }
+    .video-card video {
+        @apply absolute inset-0 size-full cursor-pointer object-cover;
+    }
+    .video-card-text {
+        @apply pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent px-3 pt-12 pb-3 text-white;
+    }
+    .video-sound {
+        @apply absolute top-2 right-2 grid size-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70;
+    }
+    .video-sound svg {
+        @apply size-4;
+    }
+    .video-expand {
+        @apply absolute top-2 left-2 grid size-8 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70;
+    }
+    .video-expand svg {
+        @apply size-4;
+    }
+
+    /* Full-screen story viewer */
+    .story {
+        @apply fixed inset-0 z-[60] grid place-items-center bg-black text-white;
+    }
+    .story-frame {
+        @apply relative h-dvh overflow-hidden bg-coffee-900;
+        width: min(100vw, calc(100dvh * 9 / 16));
+    }
+    .story-video {
+        @apply absolute inset-0 size-full object-cover;
+    }
+    .story-zones {
+        @apply absolute inset-0 grid grid-cols-[1fr_1.4fr_1fr];
+    }
+    .story-zone {
+        @apply size-full cursor-pointer focus-visible:bg-white/10 focus-visible:outline-none;
+    }
+    .story-top {
+        @apply pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/60 to-transparent px-3 pt-3 pb-10;
+    }
+    .story-top button {
+        @apply pointer-events-auto;
+    }
+    .story-bars {
+        @apply flex gap-1;
+    }
+    .story-bar {
+        @apply h-1 flex-1 overflow-hidden rounded-full bg-white/35;
+    }
+    .story-bar > span {
+        @apply block h-full bg-white;
+        transition: width 0.25s linear;
+    }
+    .story-btn {
+        @apply grid size-10 place-items-center rounded-full bg-black/45 text-white hover:bg-black/65;
+    }
+    .story-btn svg {
+        @apply size-5;
+    }
+    .story-paused {
+        @apply pointer-events-none absolute top-1/2 left-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/50;
+    }
+    .story-paused svg {
+        @apply size-7;
+    }
+    .story-info {
+        @apply pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-5 pt-24 pb-8;
+    }
+}

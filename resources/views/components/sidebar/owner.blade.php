@@ -29,6 +29,7 @@
         <p class="sidebar-section">Toko</p>
         <x-sidebar.link route="owner.vouchers.index" active="owner.vouchers.*" icon="ticket">Voucher</x-sidebar.link>
         <x-sidebar.link route="owner.banners.index" active="owner.banners.*" icon="megaphone">Banner Promo</x-sidebar.link>
+        <x-sidebar.link route="owner.videos.index" active="owner.videos.*" icon="video">Video Promo</x-sidebar.link>
         <x-sidebar.link route="owner.settings.edit" icon="settings">Pengaturan</x-sidebar.link>
 
         <p class="sidebar-section">Keamanan</p>

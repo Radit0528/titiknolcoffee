@@ -29,6 +29,9 @@ class AuditActions
         'banner.created' => 'Banner dibuat',
         'banner.updated' => 'Banner diubah',
         'banner.deleted' => 'Banner dihapus',
+        'video.created' => 'Video promo dibuat',
+        'video.updated' => 'Video promo diubah',
+        'video.deleted' => 'Video promo dihapus',
         'settings.updated' => 'Pengaturan toko diubah',
     ];
 
@@ -85,6 +88,7 @@ class AuditActions
             'App\Models\Ingredient' => 'Bahan',
             'App\Models\Voucher' => 'Voucher',
             'App\Models\Banner' => 'Banner',
+            'App\Models\MenuVideo' => 'Video promo',
             'App\Models\Setting' => 'Pengaturan',
             default => class_basename($type),
         };

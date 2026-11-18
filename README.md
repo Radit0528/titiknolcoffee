@@ -13,6 +13,7 @@ Aplikasi POS dan inventory kedai kopi (Laravel 13, MySQL, Blade, Tailwind CSS 4,
 | 6 — Shift | Kas masuk/keluar, ringkasan shift, tutup shift dengan hitung selisih kas, laporan shift (layar & cetak) | Selesai |
 | 7 — Laporan | Dashboard (omzet, laba kotor, grafik 14 hari, menu terlaris), laporan penjualan/laba kotor/bahan baku/shift dengan filter, export PDF & Excel | Selesai |
 | 8 — Keamanan & promo | Staf kasir (tambah, nonaktifkan, reset password), PIN owner, void transaksi dengan PIN owner, banner promo di layar kasir, halaman audit log | Selesai |
+| Tambahan | Halaman pelanggan di `/` (promo, menu, info kedai) dan **video promo** potret yang berputar otomatis (menu *Video Promo*, terpisah dari produk) | Selesai |
 | 5 — Payment | QRIS Midtrans — **ditunda ke tahap akhir** (sebelum final testing) | Ditunda |
 | 9 | Final testing & dokumentasi | Belum |
 
@@ -59,6 +60,18 @@ voucher `NGOPIPAGI` (10%, maks Rp5.000, min. belanja Rp20.000).
 
 **Ganti password ini sebelum dipakai untuk operasional.** Seeder data contoh (menu, bahan)
 hanya berjalan jika `APP_ENV` bukan `production`.
+
+### Video menu (halaman pelanggan)
+
+Owner mengunggah video MP4 potret (9:16, maks. 20 MB) di menu **Video Promo**. Video aktif berputar otomatis tanpa suara di halaman utama (di bawah hero), hanya saat terlihat di layar; pelanggan bisa mengetuk video untuk menyalakan suara. Batas upload bawaan PHP
+biasanya hanya 2 MB, jadi naikkan di `php.ini` (Laragon → PHP → php.ini):
+
+```ini
+upload_max_filesize = 25M
+post_max_size = 30M
+```
+
+Lalu restart Laragon. Di server produksi dengan Nginx, tambahkan juga `client_max_body_size 30m;`.
 
 ## Pengembangan
 

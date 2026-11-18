@@ -25,6 +25,14 @@
                         <input id="store_phone" name="store_phone" type="tel" maxlength="30" value="{{ old('store_phone', $settings['store_phone']) }}"
                                @class(['input sm:max-w-64', 'input-invalid' => $errors->has('store_phone')])>
                     </x-form.field>
+                    <x-form.field label="Jam buka" for="store_hours" hint="Tampil di halaman pelanggan. Contoh: Setiap hari 07.00–22.00">
+                        <input id="store_hours" name="store_hours" type="text" maxlength="100" value="{{ old('store_hours', $settings['store_hours']) }}"
+                               @class(['input', 'input-invalid' => $errors->has('store_hours')])>
+                    </x-form.field>
+                    <x-form.field label="Link Google Maps" for="store_maps_url" hint="Opsional. Salin dari tombol Bagikan di Google Maps.">
+                        <input id="store_maps_url" name="store_maps_url" type="url" maxlength="500" placeholder="https://maps.app.goo.gl/…" value="{{ old('store_maps_url', $settings['store_maps_url']) }}"
+                               @class(['input', 'input-invalid' => $errors->has('store_maps_url')])>
+                    </x-form.field>
                 </div>
             </section>
 

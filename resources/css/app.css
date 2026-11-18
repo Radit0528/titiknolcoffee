@@ -44,6 +44,7 @@
 @import './owner/recipes.css';
 @import './owner/inventory.css';
 @import './owner/admin.css';
+@import './public/home.css';
 @import './cashier/pos.css';
 @import './cashier/receipt.css';
 

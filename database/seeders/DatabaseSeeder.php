@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
 
         if (! app()->isProduction()) {
             $this->call(MasterDataSeeder::class);
+            $this->call(TitikNolMenuSeeder::class);
         }
     }
 }

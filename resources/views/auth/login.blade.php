@@ -53,6 +53,10 @@
                         <span x-show="busy" x-cloak>Memproses…</span>
                     </x-ui.button>
                 </form>
+
+                <a href="{{ route('home') }}" class="mt-6 inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
+                    <x-ui.icon name="arrow-left" class="size-4" /> Lihat menu kedai
+                </a>
             </div>
         </section>
     </div>
