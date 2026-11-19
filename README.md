@@ -2,21 +2,6 @@
 
 Aplikasi POS dan inventory kedai kopi (Laravel 13, MySQL, Blade, Tailwind CSS 4, Alpine.js).
 
-## Status pengerjaan
-
-| Tahap | Isi | Status |
-|---|---|---|
-| 1 — Foundation | Laravel, MySQL, Tailwind/Vite, Alpine, login (rate limit), role Owner/Kasir, layout | Selesai |
-| 2 — Master Data | Kategori, produk (+gambar), bahan baku, resep/BOM + HPP & margin | Selesai |
-| 3 — Inventory | Pembelian (stok masuk), stok keluar, penyesuaian/opname, riwayat mutasi, notifikasi stok menipis | Selesai |
-| 4 — POS | Buka shift, katalog + keranjang, draft/tahan pesanan, voucher, checkout tunai, potong stok otomatis, struk 58/80mm, riwayat transaksi, pengaturan toko, manajemen voucher | Selesai |
-| 6 — Shift | Kas masuk/keluar, ringkasan shift, tutup shift dengan hitung selisih kas, laporan shift (layar & cetak) | Selesai |
-| 7 — Laporan | Dashboard (omzet, laba kotor, grafik 14 hari, menu terlaris), laporan penjualan/laba kotor/bahan baku/shift dengan filter, export PDF & Excel | Selesai |
-| 8 — Keamanan & promo | Staf kasir (tambah, nonaktifkan, reset password), PIN owner, void transaksi dengan PIN owner, banner promo di layar kasir, halaman audit log | Selesai |
-| Tambahan | Halaman pelanggan di `/` (promo, menu, info kedai) dan **video promo** potret yang berputar otomatis (menu *Video Promo*, terpisah dari produk) | Selesai |
-| 5 — Payment | QRIS Midtrans — **ditunda ke tahap akhir** (sebelum final testing) | Ditunda |
-| 9 | Final testing & dokumentasi | Belum |
-
 ## Instalasi di Laragon (Windows)
 
 Syarat: Laragon dengan **PHP 8.4**, MySQL, Composer, Node.js 20+.
