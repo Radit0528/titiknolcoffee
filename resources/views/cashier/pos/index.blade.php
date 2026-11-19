@@ -167,13 +167,14 @@
                 <div class="modal-backdrop" x-on:click="closeCheckout" x-transition.opacity></div>
                 <div class="pay-panel" role="dialog" aria-modal="true" aria-labelledby="pay-title" x-transition>
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 id="pay-title" class="text-lg font-bold" x-text="paymentMethod === 'cash' ? 'Pembayaran Tunai' : 'Pembayaran Non-Tunai (DOKU)'"></h2>
+                        <h2 id="pay-title" class="text-lg font-bold" x-text="{ cash: 'Pembayaran Tunai', qris: 'Pembayaran Non-Tunai (DOKU)', qris_kedai: 'Pembayaran QRIS Kedai' }[paymentMethod]"></h2>
                         <button type="button" class="btn btn-ghost btn-sm btn-icon" x-on:click="closeCheckout" x-bind:disabled="busy || !!pendingOrder" aria-label="Tutup"><x-ui.icon name="x" /></button>
                     </div>
 
                     <div class="segmented mb-4" role="group" aria-label="Metode pembayaran">
                         <button type="button" x-on:click="setMethod('cash')" x-bind:aria-pressed="paymentMethod === 'cash'" x-bind:disabled="busy || !!pendingOrder">Tunai</button>
                         <button type="button" x-on:click="setMethod('qris')" x-bind:aria-pressed="paymentMethod === 'qris'" x-bind:disabled="busy || !!pendingOrder">QRIS / DOKU</button>
+                        <button type="button" x-show="qrisKedaiEnabled" x-on:click="setMethod('qris_kedai')" x-bind:aria-pressed="paymentMethod === 'qris_kedai'" x-bind:disabled="busy || !!pendingOrder">QRIS Kedai</button>
                     </div>
 
                     <dl class="totals mb-4">
@@ -215,6 +216,39 @@
                             <span x-show="!busy">Selesaikan pembayaran</span>
                             <span x-show="busy" x-cloak>Memproses…</span>
                         </x-ui.button>
+                    </div>
+
+                    {{-- QRIS Kedai: shop's own QRIS with the amount filled in, confirmed by the cashier --}}
+                    <div class="flex flex-col gap-3" x-show="paymentMethod === 'qris_kedai'" x-cloak>
+                        <div class="rounded-xl border border-line px-4 py-3" x-show="!pendingOrder">
+                            <p class="text-sm font-semibold">QRIS milik kedai</p>
+                            <p class="mt-0.5 text-xs text-muted">QR berisi nominal pas ditampilkan untuk discan pelanggan. Pembayaran dikonfirmasi manual oleh kasir.</p>
+                        </div>
+
+                        <div class="qris-box" x-show="pendingOrder?.kind === 'kedai'" x-cloak>
+                            <canvas x-ref="qrisCanvas" class="qris-canvas" aria-label="Kode QRIS"></canvas>
+                            <p class="text-xs font-semibold text-muted uppercase" x-text="pendingOrder?.order"></p>
+                            <p class="text-2xl font-bold tabular-nums" x-text="money(pendingOrder?.amount || 0)"></p>
+                            <p class="qris-warning">
+                                <x-ui.icon name="alert-triangle" class="size-4 shrink-0" />
+                                <span>Tekan <b>Sudah diterima</b> hanya setelah dana masuk di <b>aplikasi merchant kedai</b>, bukan dari layar HP pelanggan.</span>
+                            </p>
+                        </div>
+
+                        <p class="field-error" x-show="error" x-text="error"></p>
+
+                        <x-ui.button type="button" variant="primary" class="h-12 text-base" x-show="!pendingOrder" x-on:click="pay" x-bind:disabled="!canPay">
+                            <span x-show="!busy">Tampilkan QRIS</span>
+                            <span x-show="busy" x-cloak>Membuat QR…</span>
+                        </x-ui.button>
+
+                        <div class="grid grid-cols-2 gap-2" x-show="pendingOrder?.kind === 'kedai'" x-cloak>
+                            <x-ui.button type="button" variant="secondary" class="hover:text-danger" x-on:click="cancelPendingPayment" x-bind:disabled="busy">Batalkan</x-ui.button>
+                            <x-ui.button type="button" variant="primary" x-on:click="confirmKedai" x-bind:disabled="busy">
+                                <span x-show="!busy">Sudah diterima</span>
+                                <span x-show="busy" x-cloak>Menyimpan…</span>
+                            </x-ui.button>
+                        </div>
                     </div>
 
                     {{-- QRIS / DOKU --}}

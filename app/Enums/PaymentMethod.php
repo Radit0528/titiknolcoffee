@@ -5,13 +5,15 @@ namespace App\Enums;
 enum PaymentMethod: string
 {
     case Cash = 'cash';
-    case Qris = 'qris';
+    case Qris = 'qris';             // QRIS via DOKU (confirmed automatically)
+    case QrisKedai = 'qris_kedai';  // shop's own QRIS with amount, confirmed by the cashier
 
     public function label(): string
     {
         return match ($this) {
             self::Cash => 'Tunai',
-            self::Qris => 'QRIS',
+            self::Qris => 'DOKU',
+            self::QrisKedai => 'QRIS Kedai',
         };
     }
 }

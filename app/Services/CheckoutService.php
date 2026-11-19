@@ -35,6 +35,8 @@ class CheckoutService
         private RecipeService $recipes,
         private InventoryService $inventory,
         private SettingService $settings,
+        private QrisService $qris,
+        private AuditLogger $audit,
     ) {}
 
     /**
@@ -335,6 +337,117 @@ class CheckoutService
 
             $locked->update(['status' => OrderStatus::Expired]);
             $locked->payment?->update(['status' => PaymentStatus::Expired]);
+
+            return $locked->fresh(['payment']);
+        });
+    }
+
+    /**
+     * QRIS Kedai: create a pending order (stock and voucher reserved, like the
+     * DOKU flow) and the shop's QRIS with the exact amount filled in. Nothing
+     * notifies us of the payment, so the cashier confirms it manually.
+     *
+     * @param  array{client_token: string, items: array, order_type: string, customer_name?: ?string, voucher_code?: ?string, draft_id?: ?int}  $data
+     *
+     * @throws CheckoutException
+     */
+    public function checkoutQrisKedai(User $user, Shift $shift, array $data, string $staticPayload): Order
+    {
+        if ($staticPayload === '') {
+            throw new CheckoutException('QRIS Kedai belum diatur oleh Owner.', 'method');
+        }
+
+        try {
+            return DB::transaction(function () use ($user, $shift, $data, $staticPayload) {
+                if ($existing = Order::with('payment')->where('client_token', $data['client_token'])->first()) {
+                    return $existing;
+                }
+
+                $priced = $this->price($data['items'], $data['voucher_code'] ?? null, lockVoucher: true);
+
+                $order = Order::create([
+                    'client_token' => $data['client_token'],
+                    'shift_id' => $shift->id,
+                    'user_id' => $user->id,
+                    'status' => OrderStatus::Pending,
+                    'order_type' => OrderType::from($data['order_type']),
+                    'customer_name' => filled($data['customer_name'] ?? null) ? trim($data['customer_name']) : null,
+                    'voucher_id' => $priced['voucher']?->id,
+                    'voucher_code' => $priced['voucher']?->code,
+                    'subtotal' => $priced['subtotal'],
+                    'discount' => $priced['discount'],
+                    'service_charge' => $priced['service_charge'],
+                    'tax' => $priced['tax'],
+                    'total' => $priced['total'],
+                    'rounding' => 0,
+                    'grand_total' => $priced['total'],
+                    'service_charge_rate' => $priced['service_rate'],
+                    'tax_rate' => $priced['tax_rate'],
+                    'paid_at' => null,
+                ]);
+                $order->forceFill(['code' => $this->orderCode($order)])->save();
+
+                $this->writeItems($order, $priced['lines'], withHpp: true);
+
+                if ($priced['voucher']) {
+                    $this->vouchers->redeem($priced['voucher'], $order, $priced['discount']);
+                }
+
+                $this->deductStock($order, $priced['lines']);
+
+                Payment::create([
+                    'order_id' => $order->id,
+                    'method' => PaymentMethod::QrisKedai,
+                    'status' => PaymentStatus::Pending,
+                    'amount' => $priced['total'],
+                    'qr_payload' => $this->qris->withAmount($staticPayload, (int) $priced['total']),
+                ]);
+
+                if (! empty($data['draft_id'])) {
+                    Order::whereKey($data['draft_id'])
+                        ->where('user_id', $user->id)
+                        ->where('status', OrderStatus::Draft)
+                        ->delete();
+                }
+
+                return $order->load('payment');
+            });
+        } catch (UniqueConstraintViolationException $e) {
+            return Order::with('payment')->where('client_token', $data['client_token'])->first() ?? throw $e;
+        }
+    }
+
+    /**
+     * Cashier confirms that a QRIS Kedai payment arrived in the merchant app.
+     * Only QRIS Kedai orders can be confirmed by hand; DOKU orders are
+     * confirmed by DOKU itself.
+     *
+     * @throws CheckoutException
+     */
+    public function confirmQrisKedai(Order $order, User $cashier): Order
+    {
+        return DB::transaction(function () use ($order, $cashier) {
+            $locked = Order::with('payment')->whereKey($order->id)->lockForUpdate()->firstOrFail();
+
+            if ($locked->payment?->method !== PaymentMethod::QrisKedai) {
+                throw new CheckoutException('Pembayaran ini tidak bisa dikonfirmasi manual.', 'method');
+            }
+            if ($locked->status === OrderStatus::Paid) {
+                return $locked;
+            }
+            if ($locked->status !== OrderStatus::Pending) {
+                throw new CheckoutException('Pesanan ini sudah dibatalkan.', 'method');
+            }
+
+            $now = now();
+            $locked->update(['status' => OrderStatus::Paid, 'paid_at' => $now]);
+            $locked->payment->update(['status' => PaymentStatus::Paid, 'paid_at' => $now, 'confirmed_by' => $cashier->id]);
+
+            $this->audit->log('payment.qris_kedai_confirmed', $locked, [], [
+                'code' => $locked->code,
+                'amount' => (float) $locked->grand_total,
+                'confirmed_by' => $cashier->name,
+            ]);
 
             return $locked->fresh(['payment']);
         });

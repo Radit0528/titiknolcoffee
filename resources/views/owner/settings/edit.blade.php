@@ -99,4 +99,61 @@
             <x-ui.button class="w-full">Simpan pengaturan</x-ui.button>
         </div>
     </form>
+
+    {{-- QRIS Kedai: separate form so it never mixes with the store settings above --}}
+    <section class="card mt-6" id="qris-kedai" x-data="qrisUploader(@js(old('qris_static_payload', '')))">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">QRIS Kedai</h2>
+                <p class="mt-0.5 text-xs text-muted">QRIS stiker kedai dijadikan QR bernominal di layar kasir. Kasir mengonfirmasi pembayaran secara manual.</p>
+            </div>
+            @if ($qrisInfo)
+                <x-ui.badge variant="success">Aktif</x-ui.badge>
+            @else
+                <x-ui.badge>Belum diatur</x-ui.badge>
+            @endif
+        </div>
+        <div class="card-body grid gap-6 lg:grid-cols-2">
+            <div class="flex flex-col gap-3">
+                @if ($qrisInfo)
+                    <dl class="totals rounded-xl border border-line p-4">
+                        <div><dt>Merchant</dt><dd>{{ $qrisInfo['merchant'] }}</dd></div>
+                        <div><dt>Kota</dt><dd>{{ $qrisInfo['city'] ?: '–' }}</dd></div>
+                        <div><dt>NMID</dt><dd class="font-mono">{{ $qrisInfo['nmid'] ?? '–' }}</dd></div>
+                    </dl>
+                @endif
+                <form method="POST" action="{{ route('owner.settings.qris.update') }}" class="flex flex-col gap-3">
+                    @csrf
+                    @method('PUT')
+                    <label for="qris_image" class="label">{{ $qrisInfo ? 'Ganti QRIS' : 'Unggah gambar QRIS kedai' }}</label>
+                    <input id="qris_image" type="file" accept="image/*" x-on:change="read"
+                           class="hint file:mr-3 file:rounded-md file:border-0 file:bg-coffee-100 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-coffee-900">
+                    <p class="hint">Foto atau file QRIS statis dari aplikasi merchant (GoPay Merchant, bank, dll.). Gambar hanya dibaca di browser; yang disimpan hanya isi kodenya.</p>
+                    <p class="text-sm text-success" x-show="merchant" x-cloak>Terbaca: <b x-text="merchant"></b></p>
+                    <p class="field-error" x-show="error" x-text="error" x-cloak></p>
+                    <details class="text-xs text-muted">
+                        <summary class="cursor-pointer">Atau tempel isi kode QRIS</summary>
+                        <textarea name="qris_static_payload" x-model="payload" rows="3" maxlength="1000" class="textarea mt-2 font-mono text-xs" placeholder="000201010211…"></textarea>
+                    </details>
+                    @error('qris_static_payload', 'qris') <p class="field-error">{{ $message }}</p> @enderror
+                    <x-ui.button class="self-start" x-bind:disabled="!payload">Simpan QRIS</x-ui.button>
+                </form>
+                @if ($qrisInfo)
+                    <form method="POST" action="{{ route('owner.settings.qris.destroy') }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="text-xs font-semibold text-danger hover:underline">Nonaktifkan QRIS Kedai</button>
+                    </form>
+                @endif
+            </div>
+            <div class="rounded-xl bg-warning-soft p-4 text-sm text-ink">
+                <p class="font-semibold">Penting untuk kasir</p>
+                <ul class="mt-2 list-disc space-y-1 pl-5">
+                    <li>Pembayaran QRIS Kedai <b>tidak terkonfirmasi otomatis</b>. Kasir menekan "Sudah diterima" setelah uang masuk.</li>
+                    <li>Cek di <b>aplikasi merchant kedai</b> (mis. GoPay Merchant), bukan di layar HP pelanggan. Bukti transfer bisa dipalsukan.</li>
+                    <li>Untuk konfirmasi otomatis, gunakan metode QRIS DOKU.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
 @endsection

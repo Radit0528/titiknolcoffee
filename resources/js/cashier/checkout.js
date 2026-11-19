@@ -2,6 +2,7 @@
 // Mirrors CheckoutService::price() so the cashier sees the right numbers;
 // the server recomputes and has the final say.
 import { postJson, getJson, errorMessage } from '../components/http';
+import QRCode from 'qrcode';
 
 export default function checkout(config) {
     return {
@@ -10,7 +11,8 @@ export default function checkout(config) {
         voucherDiscount: 0,
         voucherError: '',
         checkoutOpen: false,
-        paymentMethod: 'cash',  // 'cash' | 'qris'
+        paymentMethod: 'cash',  // 'cash' | 'qris' (DOKU) | 'qris_kedai' (shop QRIS, manual confirm)
+        qrisKedaiEnabled: !!config.qrisKedai,
         cashReceived: '',
         pendingOrder: null,     // { order, payment_url, status_url, cancel_url }
         checkingStatus: false,
@@ -48,7 +50,7 @@ export default function checkout(config) {
         },
         get canPay() {
             if (this.lines.length === 0 || this.busy) return false;
-            if (this.paymentMethod === 'qris') return !this.pendingOrder;
+            if (this.paymentMethod !== 'cash') return !this.pendingOrder;
             return this.cashValue >= this.cashTotal;
         },
         // Quick cash buttons: exact amount plus common notes above the total.
@@ -149,6 +151,19 @@ export default function checkout(config) {
                 return; // keep the button disabled while the receipt loads
             }
 
+            if (this.paymentMethod === 'qris_kedai' && data.qr_payload) {
+                this.busy = false;
+                this.pendingOrder = {
+                    kind: 'kedai',
+                    order: data.order,
+                    amount: data.amount,
+                    confirm_url: data.confirm_url,
+                    cancel_url: data.cancel_url,
+                };
+                this.$nextTick(() => this.drawQris(data.qr_payload));
+                return;
+            }
+
             if (this.paymentMethod === 'qris' && data.payment_url) {
                 this.busy = false;
                 this.pendingOrder = {
@@ -231,6 +246,29 @@ export default function checkout(config) {
                 config.clientToken = data.new_client_token;
             }
             this.pendingOrder = null;
+        },
+
+        async drawQris(payload) {
+            try {
+                await QRCode.toCanvas(this.$refs.qrisCanvas, payload, { width: 280, margin: 2, errorCorrectionLevel: 'M' });
+            } catch {
+                this.error = 'QR gagal ditampilkan. Batalkan lalu coba lagi.';
+            }
+        },
+
+        // QRIS Kedai has no payment notification: the cashier confirms after
+        // seeing the money in the shop's merchant app.
+        async confirmKedai() {
+            if (!this.pendingOrder?.confirm_url || this.busy) return;
+            this.busy = true;
+            this.error = '';
+            const { ok, data } = await postJson(this.pendingOrder.confirm_url);
+            if (ok && data.redirect) {
+                window.location.assign(data.redirect);
+                return;
+            }
+            this.busy = false;
+            this.error = errorMessage(data, 'Konfirmasi gagal. Coba lagi.');
         },
 
         async saveDraft() {

@@ -67,7 +67,7 @@
         @apply w-8 text-center text-sm font-semibold tabular-nums;
     }
     .segmented {
-        @apply grid grid-cols-2 rounded-lg bg-coffee-50 p-1;
+        @apply grid auto-cols-fr grid-flow-col rounded-lg bg-coffee-50 p-1;
     }
     .segmented button {
         @apply h-8 rounded-md text-sm font-medium text-muted;
@@ -154,5 +154,18 @@
     }
     .promo-card-text {
         @apply absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3 pt-8 pb-2.5 text-white;
+    }
+}
+
+@layer components {
+    /* QRIS Kedai: QR with the amount, shown to the customer */
+    .qris-box {
+        @apply flex flex-col items-center gap-1.5 rounded-xl border border-line p-4 text-center;
+    }
+    .qris-canvas {
+        @apply size-64 rounded-lg bg-white;
+    }
+    .qris-warning {
+        @apply mt-2 flex items-start gap-2 rounded-lg bg-warning-soft px-3 py-2 text-left text-xs text-ink;
     }
 }

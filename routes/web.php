@@ -14,6 +14,7 @@ use App\Http\Controllers\Owner\IngredientController;
 use App\Http\Controllers\Owner\MenuVideoController;
 use App\Http\Controllers\Owner\ProductController;
 use App\Http\Controllers\Owner\PurchaseController;
+use App\Http\Controllers\Owner\QrisSettingsController;
 use App\Http\Controllers\Owner\RecipeController;
 use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\SettingsController;
@@ -71,6 +72,8 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner')->name('owner.')->grou
     Route::resource('vouchers', VoucherController::class)->except('show');
     Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::put('settings/qris', [QrisSettingsController::class, 'update'])->name('settings.qris.update');
+    Route::delete('settings/qris', [QrisSettingsController::class, 'destroy'])->name('settings.qris.destroy');
 
     // Tahap 7 — laporan
     Route::get('laporan', fn () => redirect()->route('owner.reports.show', 'penjualan'))->name('reports.index');
@@ -101,6 +104,7 @@ Route::middleware(['auth', 'role:cashier'])->prefix('kasir')->name('cashier.')->
         Route::post('checkout', [PosController::class, 'checkout'])->name('pos.checkout')->middleware('throttle:60,1');
         Route::get('pembayaran/{order}/status', [PosController::class, 'paymentStatus'])->name('pos.payment.status');
         Route::post('pembayaran/{order}/batal', [PosController::class, 'cancelPayment'])->name('pos.payment.cancel');
+        Route::post('pembayaran/{order}/terima', [PosController::class, 'confirmQrisKedai'])->name('pos.payment.confirm');
 
         // Tahap 6 — kas masuk/keluar & tutup shift
         Route::get('shift', [ShiftController::class, 'current'])->name('shift.current');

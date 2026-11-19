@@ -18,6 +18,8 @@ class Payment extends Model
         'cash_received',
         'change',
         'payment_url',
+        'qr_payload',
+        'confirmed_by',
         'paid_at',
         'expires_at',
     ];

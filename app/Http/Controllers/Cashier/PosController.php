@@ -73,6 +73,7 @@ class PosController extends Controller
                 'taxRate' => $this->settings->taxRate(),
                 'serviceRate' => $this->settings->serviceChargeRate(),
                 'cashRounding' => $this->settings->cashRounding(),
+                'qrisKedai' => (string) $this->settings->get('qris_static_payload') !== '',
                 'clientToken' => (string) Str::uuid(),
                 'urls' => [
                     'quote' => route('cashier.pos.quote'),
@@ -115,6 +116,26 @@ class PosController extends Controller
         $method = $request->input('method', 'cash');
 
         try {
+            if ($method === 'qris_kedai') {
+                $order = $this->checkout->checkoutQrisKedai(
+                    $request->user(),
+                    $request->attributes->get('shift'),
+                    $request->cart(),
+                    (string) $this->settings->get('qris_static_payload'),
+                );
+
+                return response()->json([
+                    'order' => $order->code,
+                    'order_id' => $order->id,
+                    'status' => $order->status->value,
+                    'amount' => (int) $order->grand_total,
+                    'qr_payload' => $order->payment?->qr_payload,
+                    'confirm_url' => route('cashier.pos.payment.confirm', $order),
+                    'cancel_url' => route('cashier.pos.payment.cancel', $order),
+                    'redirect' => $order->status === OrderStatus::Paid ? route('orders.show', $order) : null,
+                ]);
+            }
+
             if ($method === 'qris') {
                 $order = $this->checkout->checkoutQris(
                     $request->user(),
@@ -170,6 +191,22 @@ class PosController extends Controller
             'redirect' => $order->status === OrderStatus::Paid ? route('orders.show', $order) : null,
             'new_client_token' => $order->status === OrderStatus::Expired ? (string) Str::uuid() : null,
         ]);
+    }
+
+    /**
+     * QRIS Kedai: the cashier saw the money arrive in the merchant app.
+     */
+    public function confirmQrisKedai(Request $request, Order $order): JsonResponse
+    {
+        abort_unless($order->user_id === $request->user()->id, 403);
+
+        try {
+            $order = $this->checkout->confirmQrisKedai($order, $request->user());
+        } catch (CheckoutException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['order' => $order->code, 'redirect' => route('orders.show', $order)]);
     }
 
     /**

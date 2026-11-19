@@ -9,6 +9,7 @@ class AuditActions
 {
     public const LABELS = [
         'order.voided' => 'Transaksi dibatalkan (void)',
+        'payment.qris_kedai_confirmed' => 'Pembayaran QRIS Kedai dikonfirmasi kasir',
         'shift.closed' => 'Shift ditutup',
         'owner.pin_set' => 'PIN owner dibuat',
         'owner.pin_changed' => 'PIN owner diubah',

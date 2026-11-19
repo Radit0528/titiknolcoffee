@@ -22,6 +22,8 @@ class SettingService
         'store_phone' => '',
         'store_hours' => '',
         'store_maps_url' => '',
+        // Static QRIS sticker payload of the shop (QRIS Kedai). Not secret: it is printed at the counter.
+        'qris_static_payload' => '',
         'store_logo' => null,
         'receipt_footer' => 'Terima kasih, sampai jumpa lagi!',
         'receipt_width' => 58,

@@ -13,7 +13,7 @@ class CheckoutRequest extends CartRequest
     {
         return parent::rules() + [
             'client_token' => ['required', 'uuid'],
-            'method' => ['nullable', Rule::in(['cash', 'qris'])],
+            'method' => ['nullable', Rule::in(['cash', 'qris', 'qris_kedai'])],
             'cash_received' => [
                 Rule::requiredIf(fn () => $this->input('method', 'cash') === 'cash'),
                 'nullable',

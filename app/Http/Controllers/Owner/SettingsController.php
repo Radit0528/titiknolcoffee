@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Exceptions\CheckoutException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\SettingsRequest;
+use App\Services\QrisService;
 use App\Services\SettingService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -19,7 +21,22 @@ class SettingsController extends Controller
             'settings' => $this->settings->all(),
             'logoUrl' => $this->settings->logoUrl(),
             'roundingOptions' => SettingService::ROUNDING_OPTIONS,
+            'qrisInfo' => $this->qrisInfo(),
         ]);
+    }
+
+    /**
+     * @return array{merchant: string, city: string, nmid: ?string}|null
+     */
+    private function qrisInfo(): ?array
+    {
+        $payload = (string) $this->settings->get('qris_static_payload');
+
+        try {
+            return $payload !== '' ? app(QrisService::class)->validateStatic($payload) : null;
+        } catch (CheckoutException) {
+            return null;
+        }
     }
 
     public function update(SettingsRequest $request): RedirectResponse

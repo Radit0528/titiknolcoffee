@@ -73,6 +73,18 @@ post_max_size = 30M
 
 Lalu restart Laragon. Di server produksi dengan Nginx, tambahkan juga `client_max_body_size 30m;`.
 
+### QRIS Kedai (QRIS statis → bernominal)
+
+Selain tunai dan QRIS DOKU, kasir bisa memakai **QRIS Kedai**: QRIS stiker milik kedai diubah menjadi QR berisi
+nominal pesanan (tag 01 `11`→`12`, tambah tag 54 nominal, hitung ulang CRC16). Aktifkan di **Pengaturan → QRIS Kedai**
+dengan mengunggah gambar QRIS statis (dibaca di browser; yang disimpan hanya isi kodenya).
+
+- Tidak ada notifikasi dari bank/e-wallet, jadi kasir menekan **Sudah diterima** setelah dana terlihat di aplikasi
+  merchant kedai (bukan dari layar HP pelanggan). Setiap konfirmasi tercatat di audit log beserta nama kasir.
+- Stok dan voucher dipesan saat QR ditampilkan dan dikembalikan jika dibatalkan, sama seperti alur DOKU.
+- Masuk ringkasan shift sebagai penjualan non-tunai (tidak masuk laci).
+- Uji dulu dengan beberapa aplikasi (GoPay, m-banking) sebelum dipakai melayani pelanggan.
+
 ## Pengembangan
 
 ```bash
