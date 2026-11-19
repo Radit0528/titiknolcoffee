@@ -90,6 +90,28 @@ class HomePageTest extends TestCase
         $this->actingAs($this->owner())->get('/owner')->assertOk()->assertSee('images/logo-titiknol-light.png', false);
     }
 
+    public function test_browser_tab_shows_titik_nol_icon_and_name(): void
+    {
+        // A real icon file (it used to be empty, so browsers showed a cached Laravel icon).
+        $ico = file_get_contents(public_path('favicon.ico'));
+        $this->assertSame("\x00\x00\x01\x00", substr($ico, 0, 4));
+        $this->assertStringContainsString('<svg', file_get_contents(public_path('favicon.svg')));
+        $this->assertFileExists(public_path('apple-touch-icon.png'));
+
+        config(['app.name' => 'Titik Nol Coffee']);
+
+        foreach (['/', '/login'] as $url) {
+            $this->get($url)->assertOk()
+                ->assertSee('favicon.svg', false)
+                ->assertSee('apple-touch-icon.png', false)
+                ->assertSee('· Titik Nol Coffee</title>', false)
+                ->assertDontSee('Laravel</title>', false);
+        }
+
+        // New installs get the shop name too.
+        $this->assertStringContainsString('APP_NAME="Titik Nol Coffee"', file_get_contents(base_path('.env.example')));
+    }
+
     public function test_owner_saves_hours_and_maps_link(): void
     {
         $owner = $this->owner();
