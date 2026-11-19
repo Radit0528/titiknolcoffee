@@ -112,6 +112,27 @@ class HomePageTest extends TestCase
         $this->assertStringContainsString('APP_NAME="Titik Nol Coffee"', file_get_contents(base_path('.env.example')));
     }
 
+    public function test_instagram_link_is_saved_and_shown(): void
+    {
+        $owner = $this->owner();
+        $base = ['store_name' => 'Kopi Titik Nol', 'receipt_width' => 58, 'tax_percent' => 0, 'service_charge_percent' => 0, 'cash_rounding' => 0];
+
+        // No link: no Instagram button.
+        $this->get('/')->assertOk()->assertDontSee('instagram.com', false);
+
+        $this->actingAs($owner)->put('/owner/settings', $base + ['store_instagram_url' => 'https://www.tiktok.com/@titiknol'])
+            ->assertSessionHasErrors(['store_instagram_url' => 'Gunakan link profil Instagram, contoh: https://www.instagram.com/titiknolcoffee']);
+
+        $this->actingAs($owner)->put('/owner/settings', $base + ['store_instagram_url' => 'https://www.instagram.com/titiknolcoffee.tanjungpwt/'])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('@titiknolcoffee.tanjungpwt', app(SettingService::class)->instagramHandle());
+        $this->get('/')->assertOk()
+            ->assertSee('@titiknolcoffee.tanjungpwt')
+            ->assertSee('href="https://www.instagram.com/titiknolcoffee.tanjungpwt/" target="_blank" rel="noopener"', false);
+        $this->actingAs($owner)->get('/owner/settings')->assertOk()->assertSee('Link Instagram');
+    }
+
     public function test_owner_saves_hours_and_maps_link(): void
     {
         $owner = $this->owner();

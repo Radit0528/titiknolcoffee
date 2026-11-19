@@ -33,6 +33,10 @@
                         <input id="store_maps_url" name="store_maps_url" type="url" maxlength="500" placeholder="https://maps.app.goo.gl/…" value="{{ old('store_maps_url', $settings['store_maps_url']) }}"
                                @class(['input', 'input-invalid' => $errors->has('store_maps_url')])>
                     </x-form.field>
+                    <x-form.field label="Link Instagram" for="store_instagram_url" hint="Opsional. Link profil Instagram kedai, tampil di halaman pelanggan.">
+                        <input id="store_instagram_url" name="store_instagram_url" type="url" maxlength="255" placeholder="https://www.instagram.com/…" value="{{ old('store_instagram_url', $settings['store_instagram_url']) }}"
+                               @class(['input', 'input-invalid' => $errors->has('store_instagram_url')])>
+                    </x-form.field>
                 </div>
             </section>
 

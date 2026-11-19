@@ -24,6 +24,7 @@ class SettingsRequest extends FormRequest
             'store_phone' => ['nullable', 'string', 'max:30'],
             'store_hours' => ['nullable', 'string', 'max:100'],
             'store_maps_url' => ['nullable', 'url:https', 'max:500'],
+            'store_instagram_url' => ['nullable', 'url:https', 'max:255', 'regex:~^https://(www\.)?instagram\.com/[A-Za-z0-9._]+/?(\?.*)?$~'],
             'receipt_footer' => ['nullable', 'string', 'max:255'],
             'receipt_width' => ['required', Rule::in([58, 80])],
             'tax_percent' => ['required', 'numeric', 'min:0', 'max:100'],
@@ -39,6 +40,11 @@ class SettingsRequest extends FormRequest
         $this->merge(['remove_logo' => $this->boolean('remove_logo')]);
     }
 
+    public function messages(): array
+    {
+        return ['store_instagram_url.regex' => 'Gunakan link profil Instagram, contoh: https://www.instagram.com/titiknolcoffee'];
+    }
+
     public function attributes(): array
     {
         return [
@@ -47,6 +53,7 @@ class SettingsRequest extends FormRequest
             'store_phone' => 'nomor telepon',
             'store_hours' => 'jam buka',
             'store_maps_url' => 'link Google Maps',
+            'store_instagram_url' => 'link Instagram',
             'receipt_footer' => 'footer struk',
             'receipt_width' => 'ukuran struk',
             'tax_percent' => 'pajak',

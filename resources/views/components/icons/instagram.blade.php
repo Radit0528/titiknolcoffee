@@ -1,0 +1,7 @@
+{{-- Instagram glyph (the icon library has no brand icons). Same stroke style as the other icons. --}}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+     {{ $attributes->merge(['class' => 'size-4', 'aria-hidden' => 'true']) }}>
+    <rect x="2" y="2" width="20" height="20" rx="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" />
+</svg>

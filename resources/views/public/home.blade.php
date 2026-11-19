@@ -193,9 +193,21 @@
                         @if ($settings['store_phone'])
                             <p class="public-info"><x-ui.icon name="phone" /> <a href="tel:{{ preg_replace('/[^0-9+]/', '', $settings['store_phone']) }}" class="hover:underline">{{ $settings['store_phone'] }}</a></p>
                         @endif
+                        @if ($instagramHandle)
+                            <p class="public-info"><x-icons.instagram /> <a href="{{ $settings['store_instagram_url'] }}" target="_blank" rel="noopener" class="hover:underline">{{ $instagramHandle }}</a></p>
+                        @endif
                     </div>
-                    @if ($settings['store_maps_url'])
-                        <x-ui.button :href="$settings['store_maps_url']" variant="secondary" icon="map-pin" target="_blank" rel="noopener">Buka di Google Maps</x-ui.button>
+                    @if ($settings['store_maps_url'] || $instagramHandle)
+                        <div class="flex flex-col gap-2">
+                            @if ($settings['store_maps_url'])
+                                <x-ui.button :href="$settings['store_maps_url']" variant="secondary" icon="map-pin" target="_blank" rel="noopener">Buka di Google Maps</x-ui.button>
+                            @endif
+                            @if ($instagramHandle)
+                                <a href="{{ $settings['store_instagram_url'] }}" target="_blank" rel="noopener" class="btn btn-secondary">
+                                    <x-icons.instagram /> Instagram
+                                </a>
+                            @endif
+                        </div>
                     @endif
                 </div>
             </section>

@@ -22,6 +22,7 @@ class SettingService
         'store_phone' => '',
         'store_hours' => '',
         'store_maps_url' => '',
+        'store_instagram_url' => '',
         // Static QRIS sticker payload of the shop (QRIS Kedai). Not secret: it is printed at the counter.
         'qris_static_payload' => '',
         'store_logo' => null,
@@ -72,6 +73,16 @@ class SettingService
         $path = $this->get('store_logo');
 
         return $path ? Storage::disk('public')->url($path) : null;
+    }
+
+    /**
+     * "https://www.instagram.com/titiknolcoffee.tanjungpwt/" → "@titiknolcoffee.tanjungpwt".
+     */
+    public function instagramHandle(): ?string
+    {
+        $path = trim((string) parse_url((string) $this->get('store_instagram_url'), PHP_URL_PATH), '/');
+
+        return $path !== '' ? '@'.explode('/', $path)[0] : null;
     }
 
     /**

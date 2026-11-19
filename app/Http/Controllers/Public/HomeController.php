@@ -43,6 +43,7 @@ class HomeController extends Controller
             'banners' => Banner::showing()->limit(6)->get(),
             'settings' => $this->settings->all(),
             'logoUrl' => $this->settings->logoUrl(),
+            'instagramHandle' => $this->settings->instagramHandle(),
         ]);
     }
 }
