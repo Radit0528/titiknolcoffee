@@ -167,13 +167,13 @@
                 <div class="modal-backdrop" x-on:click="closeCheckout" x-transition.opacity></div>
                 <div class="pay-panel" role="dialog" aria-modal="true" aria-labelledby="pay-title" x-transition>
                     <div class="mb-4 flex items-center justify-between">
-                        <h2 id="pay-title" class="text-lg font-bold" x-text="{ cash: 'Pembayaran Tunai', qris: 'Pembayaran Non-Tunai (DOKU)', qris_kedai: 'Pembayaran QRIS Kedai' }[paymentMethod]"></h2>
+                        <h2 id="pay-title" class="text-lg font-bold" x-text="{ cash: 'Pembayaran Tunai', qris: 'Pembayaran DOKU', qris_kedai: 'Pembayaran QRIS Kedai' }[paymentMethod]"></h2>
                         <button type="button" class="btn btn-ghost btn-sm btn-icon" x-on:click="closeCheckout" x-bind:disabled="busy || !!pendingOrder" aria-label="Tutup"><x-ui.icon name="x" /></button>
                     </div>
 
                     <div class="segmented mb-4" role="group" aria-label="Metode pembayaran">
                         <button type="button" x-on:click="setMethod('cash')" x-bind:aria-pressed="paymentMethod === 'cash'" x-bind:disabled="busy || !!pendingOrder">Tunai</button>
-                        <button type="button" x-on:click="setMethod('qris')" x-bind:aria-pressed="paymentMethod === 'qris'" x-bind:disabled="busy || !!pendingOrder">QRIS / DOKU</button>
+                        <button type="button" x-on:click="setMethod('qris')" x-bind:aria-pressed="paymentMethod === 'qris'" x-bind:disabled="busy || !!pendingOrder">DOKU</button>
                         <button type="button" x-show="qrisKedaiEnabled" x-on:click="setMethod('qris_kedai')" x-bind:aria-pressed="paymentMethod === 'qris_kedai'" x-bind:disabled="busy || !!pendingOrder">QRIS Kedai</button>
                     </div>
 
@@ -251,7 +251,7 @@
                         </div>
                     </div>
 
-                    {{-- QRIS / DOKU --}}
+                    {{-- DOKU --}}
                     <div class="flex flex-col gap-3" x-show="paymentMethod === 'qris'" x-cloak>
                         <div class="rounded-xl border border-line px-4 py-3" x-show="!pendingOrder">
                             <p class="text-sm font-semibold">Gateway Pembayaran DOKU</p>

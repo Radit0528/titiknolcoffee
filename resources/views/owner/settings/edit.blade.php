@@ -151,7 +151,7 @@
                 <ul class="mt-2 list-disc space-y-1 pl-5">
                     <li>Pembayaran QRIS Kedai <b>tidak terkonfirmasi otomatis</b>. Kasir menekan "Sudah diterima" setelah uang masuk.</li>
                     <li>Cek di <b>aplikasi merchant kedai</b> (mis. GoPay Merchant), bukan di layar HP pelanggan. Bukti transfer bisa dipalsukan.</li>
-                    <li>Untuk konfirmasi otomatis, gunakan metode QRIS DOKU.</li>
+                    <li>Untuk konfirmasi otomatis, gunakan metode DOKU.</li>
                 </ul>
             </div>
         </div>

@@ -377,7 +377,7 @@ class ReportService
                     ['label' => 'Tutup', 'type' => 'datetime'],
                     ['label' => 'Modal awal', 'type' => 'money'],
                     ['label' => 'Tunai', 'type' => 'money'],
-                    ['label' => 'QRIS', 'type' => 'money'],
+                    ['label' => 'Non-tunai', 'type' => 'money'],
                     ['label' => 'Kas masuk', 'type' => 'money'],
                     ['label' => 'Kas keluar', 'type' => 'money'],
                     ['label' => 'Seharusnya', 'type' => 'money'],

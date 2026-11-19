@@ -9,7 +9,7 @@
     <div><dt>Kas keluar</dt><dd>-{{ Format::rupiah($summary['cash_out']) }}</dd></div>
     <div class="!border-t-2 !border-coffee-900/10"><dt class="!font-semibold !text-ink">Uang seharusnya di laci</dt><dd class="text-lg">{{ Format::rupiah($summary['expected_cash']) }}</dd></div>
     @if ($summary['qris_sales'] > 0)
-        <div><dt>Penjualan QRIS <span class="hint">(tidak masuk laci)</span></dt><dd>{{ Format::rupiah($summary['qris_sales']) }}</dd></div>
+        <div><dt>Penjualan non-tunai <span class="hint">(DOKU + QRIS Kedai, tidak masuk laci)</span></dt><dd>{{ Format::rupiah($summary['qris_sales']) }}</dd></div>
     @endif
     @if (($summary['void_count'] ?? 0) > 0)
         <div><dt>Transaksi dibatalkan <span class="hint">({{ $summary['void_count'] }}×, sudah dikeluarkan dari penjualan)</span></dt><dd>{{ Format::rupiah($summary['void_total']) }}</dd></div>

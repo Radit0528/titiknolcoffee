@@ -11,7 +11,7 @@ export default function checkout(config) {
         voucherDiscount: 0,
         voucherError: '',
         checkoutOpen: false,
-        paymentMethod: 'cash',  // 'cash' | 'qris' (DOKU) | 'qris_kedai' (shop QRIS, manual confirm)
+        paymentMethod: 'cash',  // 'cash' | 'qris' (= DOKU) | 'qris_kedai' (shop QRIS, manual confirm)
         qrisKedaiEnabled: !!config.qrisKedai,
         cashReceived: '',
         pendingOrder: null,     // { order, payment_url, status_url, cancel_url }

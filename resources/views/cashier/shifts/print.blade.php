@@ -28,7 +28,7 @@
         <div class="receipt-row"><span>Diskon</span><span>{{ Format::rupiah($summary['discount']) }}</span></div>
         <div class="receipt-row"><span>Tunai</span><span>{{ Format::rupiah($summary['cash_sales']) }}</span></div>
         @if ($summary['qris_sales'] > 0)
-            <div class="receipt-row"><span>QRIS</span><span>{{ Format::rupiah($summary['qris_sales']) }}</span></div>
+            <div class="receipt-row"><span>Non-tunai</span><span>{{ Format::rupiah($summary['qris_sales']) }}</span></div>
         @endif
         <div class="receipt-row receipt-total"><span>PENJUALAN</span><span>{{ Format::rupiah($summary['total_sales']) }}</span></div>
         <hr class="receipt-rule">

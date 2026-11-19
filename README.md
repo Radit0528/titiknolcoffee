@@ -75,7 +75,7 @@ Lalu restart Laragon. Di server produksi dengan Nginx, tambahkan juga `client_ma
 
 ### QRIS Kedai (QRIS statis → bernominal)
 
-Selain tunai dan QRIS DOKU, kasir bisa memakai **QRIS Kedai**: QRIS stiker milik kedai diubah menjadi QR berisi
+Selain tunai dan DOKU, kasir bisa memakai **QRIS Kedai**: QRIS stiker milik kedai diubah menjadi QR berisi
 nominal pesanan (tag 01 `11`→`12`, tambah tag 54 nominal, hitung ulang CRC16). Aktifkan di **Pengaturan → QRIS Kedai**
 dengan mengunggah gambar QRIS statis (dibaca di browser; yang disimpan hanya isi kodenya).
 

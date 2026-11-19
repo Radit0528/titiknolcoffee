@@ -5,7 +5,7 @@ namespace App\Enums;
 enum PaymentMethod: string
 {
     case Cash = 'cash';
-    case Qris = 'qris';             // QRIS via DOKU (confirmed automatically)
+    case Qris = 'qris';             // DOKU payment gateway (confirmed automatically); value kept for existing orders
     case QrisKedai = 'qris_kedai';  // shop's own QRIS with amount, confirmed by the cashier
 
     public function label(): string

@@ -111,7 +111,7 @@ class ShiftService
 
         $opening = (int) round((float) $shift->opening_cash);
         $cashSales = (int) round((float) ($sales[PaymentMethod::Cash->value] ?? 0));
-        // Non-cash: QRIS via DOKU and QRIS Kedai. Neither goes into the cash drawer.
+        // Non-cash: DOKU and QRIS Kedai. Neither goes into the cash drawer.
         $qrisSales = (int) round((float) ($sales[PaymentMethod::Qris->value] ?? 0) + (float) ($sales[PaymentMethod::QrisKedai->value] ?? 0));
         $cashIn = (int) round((float) ($movements[CashMovementType::In->value] ?? 0));
         $cashOut = (int) round((float) ($movements[CashMovementType::Out->value] ?? 0));
