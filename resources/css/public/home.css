@@ -139,3 +139,59 @@
         @apply pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-5 pt-24 pb-8;
     }
 }
+@layer components {
+    /* Hero: coffee-bean pattern, warm glows, steaming-cup line art and a wave into the menu. CSS only. */
+    .public-hero {
+        position: relative;
+        overflow: hidden;
+        padding-bottom: 6rem;
+        background-color: #2b170e;
+        background-image:
+            radial-gradient(50% 120% at 100% 0%, rgb(224 138 46 / 0.3), transparent 60%),
+            radial-gradient(40% 80% at 0% 100%, rgb(120 72 40 / 0.45), transparent 60%),
+            url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22120%22%20height%3D%22120%22%20viewBox%3D%220%200%20120%20120%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%22.07%22%20stroke-width%3D%222%22%3E%3Cg%20transform%3D%22translate%2830%2032%29%20rotate%28-30%29%22%3E%3Cellipse%20rx%3D%2211%22%20ry%3D%2215%22/%3E%3Cpath%20d%3D%22M0%20-14%20C-6%20-5%206%205%200%2014%22/%3E%3C/g%3E%3Cg%20transform%3D%22translate%2888%2086%29%20rotate%2825%29%22%3E%3Cellipse%20rx%3D%2211%22%20ry%3D%2215%22/%3E%3Cpath%20d%3D%22M0%20-14%20C-6%20-5%206%205%200%2014%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        background-size: auto, auto, 120px 120px;
+    }
+    .public-hero > * {
+        position: relative;
+        z-index: 1;
+    }
+    .public-hero::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        right: 10%;
+        top: 50%;
+        transform: translateY(-55%) rotate(-8deg);
+        background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20200%20200%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23f6c58f%22%20stroke-opacity%3D%22.22%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M40%2085h100v40a45%2045%200%200%201-45%2045h-10a45%2045%200%200%201-45-45z%22/%3E%3Cpath%20d%3D%22M140%2095h12a20%2020%200%200%201%200%2040h-14%22/%3E%3Cpath%20d%3D%22M70%2030c-8%2010%208%2018%200%2030M95%2025c-8%2010%208%2018%200%2030M120%2030c-8%2010%208%2018%200%2030%22/%3E%3C/g%3E%3C/svg%3E") no-repeat center / contain;
+        pointer-events: none;
+    }
+    .public-hero::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 60px;
+        background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%201440%2060%22%20preserveAspectRatio%3D%22none%22%3E%3Cpath%20fill%3D%22%23fdfcfa%22%20d%3D%22M0%2060V30c240%2030%20480%2030%20720%200s480-30%20720%200v30z%22/%3E%3C/svg%3E") no-repeat bottom / 100% 100%;
+        pointer-events: none;
+    }
+    @media (max-width: 640px) {
+        .public-hero {
+            padding-bottom: 4.5rem;
+        }
+        .public-hero::before {
+            width: 150px;
+            height: 150px;
+            right: -24px;
+            top: auto;
+            bottom: 24px;
+            transform: rotate(-8deg);
+            opacity: 0.7;
+        }
+        .public-hero::after {
+            height: 36px;
+        }
+    }
+}
